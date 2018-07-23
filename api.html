@@ -4,21 +4,13 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>kraken API &#8212; kraken 0.9.8-1-gf898512
- documentation</title>
+    <title>kraken API &#8212; kraken  documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.9.8-1-gf898512',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" href="_static/banner.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
@@ -32,24 +24,34 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
-  <div class="section" id="module-kraken">
+  
+
+
+
+
+
+<div class="section" id="module-kraken">
 <span id="kraken-api"></span><h1>kraken API<a class="headerlink" href="#module-kraken" title="Permalink to this headline">¶</a></h1>
 <p>Kraken provides routines which are usable by third party tools. In general
-you can expect function in the <code class="docutils literal"><span class="pre">kraken</span></code> package to remain stable. We will try
+you can expect function in the <code class="docutils literal notranslate"><span class="pre">kraken</span></code> package to remain stable. We will try
 to keep these backward compatible, but as kraken is still in an early
 development stage and the API is still quite rudimentary nothing can be
 garantueed.</p>
 <div class="section" id="module-kraken.binarization">
 <span id="kraken-binarization-module"></span><h2>kraken.binarization module<a class="headerlink" href="#module-kraken.binarization" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="kraken-binarization">
+<h3>kraken.binarization<a class="headerlink" href="#kraken-binarization" title="Permalink to this headline">¶</a></h3>
+<p>An adaptive binarization algorithm.</p>
 <dl class="function">
 <dt id="kraken.binarization.is_bitonal">
 <code class="descclassname">kraken.binarization.</code><code class="descname">is_bitonal</code><span class="sig-paren">(</span><em>im</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.binarization.is_bitonal" title="Permalink to this definition">¶</a></dt>
@@ -88,7 +90,10 @@ otherwise.</td>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">PIL.Image containing the binarized image</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">PIL.Image containing the binarized image</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">KrakenInputException when trying to binarize an empty image.</p>
 </td>
 </tr>
 </tbody>
@@ -96,15 +101,17 @@ otherwise.</td>
 </dd></dl>
 
 </div>
+</div>
 <div class="section" id="module-kraken.serialization">
 <span id="kraken-serialization-module"></span><h2>kraken.serialization module<a class="headerlink" href="#module-kraken.serialization" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="kraken.serialization.serialize">
-<code class="descclassname">kraken.serialization.</code><code class="descname">serialize</code><span class="sig-paren">(</span><em>records</em>, <em>image_name=u''</em>, <em>image_size=(0</em>, <em>0)</em>, <em>writing_mode='horizontal-tb'</em>, <em>scripts=None</em>, <em>template='hocr'</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.serialization.serialize" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">kraken.serialization.</code><code class="descname">serialize</code><span class="sig-paren">(</span><em>records</em>, <em>image_name=''</em>, <em>image_size=(0</em>, <em>0)</em>, <em>writing_mode='horizontal-tb'</em>, <em>scripts=None</em>, <em>template='hocr'</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.serialization.serialize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Serializes a list of ocr_records into an output document.</p>
 <p>Serializes a list of predictions and their corresponding positions by doing
 some hOCR-specific preprocessing and then renders them through one of
 several jinja2 templates.</p>
+<p>Note: Empty records are ignored for serialization purposes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -130,9 +137,12 @@ vertical-lr.</li>
 </div>
 <div class="section" id="module-kraken.pageseg">
 <span id="kraken-pageseg-module"></span><h2>kraken.pageseg module<a class="headerlink" href="#module-kraken.pageseg" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="kraken-pageseg">
+<h3>kraken.pageseg<a class="headerlink" href="#kraken-pageseg" title="Permalink to this headline">¶</a></h3>
+<p>Layout analysis and script detection methods.</p>
 <dl class="function">
 <dt id="kraken.pageseg.segment">
-<code class="descclassname">kraken.pageseg.</code><code class="descname">segment</code><span class="sig-paren">(</span><em>im</em>, <em>text_direction='horizontal-lr'</em>, <em>scale=None</em>, <em>maxcolseps=2</em>, <em>black_colseps=False</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.pageseg.segment" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">kraken.pageseg.</code><code class="descname">segment</code><span class="sig-paren">(</span><em>im</em>, <em>text_direction='horizontal-lr'</em>, <em>scale=None</em>, <em>maxcolseps=2</em>, <em>black_colseps=False</em>, <em>no_hlines=True</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.pageseg.segment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Segments a page into text lines.</p>
 <p>Segments a page into text lines and returns the absolute coordinates of
 each line in reading order.</p>
@@ -148,6 +158,7 @@ each line in reading order.</p>
 <li><strong>maxcolseps</strong> (<em>int</em>) – Maximum number of whitespace column separators</li>
 <li><strong>black_colseps</strong> (<em>bool</em>) – Whether column separators are assumed to be
 vertical black lines or not</li>
+<li><strong>no_hlines</strong> (<em>bool</em>) – Switch for horizontal line removal</li>
 </ul>
 </td>
 </tr>
@@ -171,7 +182,7 @@ sorted bounding boxes under the key ‘boxes’.</p>
 
 <dl class="function">
 <dt id="kraken.pageseg.detect_scripts">
-<code class="descclassname">kraken.pageseg.</code><code class="descname">detect_scripts</code><span class="sig-paren">(</span><em>im</em>, <em>bounds</em>, <em>model=None</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.pageseg.detect_scripts" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">kraken.pageseg.</code><code class="descname">detect_scripts</code><span class="sig-paren">(</span><em>im</em>, <em>bounds</em>, <em>model='/home/mittagessen/git/kraken/kraken/script.mlmodel'</em>, <em>valid_scripts=None</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.pageseg.detect_scripts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Detects scripts in a segmented page.</p>
 <p>Classifies lines returned by the page segmenter into runs of scripts/writing systems.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -185,6 +196,7 @@ coordinates (x0, y0, x1, y1) of a text line in the image
 and an entry ‘text_direction’ containing
 ‘horizontal-lr/rl/vertical-lr/rl’.</li>
 <li><strong>model</strong> (<em>str</em>) – Location of the script classification model or None for default.</li>
+<li><strong>valid_scripts</strong> (<em>list</em>) – List of valid scripts.</li>
 </ul>
 </td>
 </tr>
@@ -198,11 +210,7 @@ of a single line. Script is a ISO15924 4 character identifier.</p>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">{‘script_detection’</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
-<li>KrakenInputException if the input image is not binarized or the text</li>
-<li>direction is invalid.</li>
-<li>KrakenInvalidModelException if no clstm module is available.</li>
-</ul>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">KrakenInvalidModelException if no clstm module is available.</p>
 </td>
 </tr>
 </tbody>
@@ -210,8 +218,19 @@ of a single line. Script is a ISO15924 4 character identifier.</p>
 </dd></dl>
 
 </div>
+</div>
 <div class="section" id="module-kraken.rpred">
 <span id="kraken-rpred-module"></span><h2>kraken.rpred module<a class="headerlink" href="#module-kraken.rpred" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="kraken-rpred">
+<h3>kraken.rpred<a class="headerlink" href="#kraken-rpred" title="Permalink to this headline">¶</a></h3>
+<p>Generators for recognition on lines images.</p>
+<dl class="class">
+<dt id="kraken.rpred.ocr_record">
+<em class="property">class </em><code class="descclassname">kraken.rpred.</code><code class="descname">ocr_record</code><span class="sig-paren">(</span><em>prediction</em>, <em>cuts</em>, <em>confidences</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.rpred.ocr_record" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A record object containing the recognition result of a single line</p>
+</dd></dl>
+
 <dl class="function">
 <dt id="kraken.rpred.bidi_record">
 <code class="descclassname">kraken.rpred.</code><code class="descname">bidi_record</code><span class="sig-paren">(</span><em>record</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.rpred.bidi_record" title="Permalink to this definition">¶</a></dt>
@@ -231,53 +250,8 @@ requiring reordering for proper display.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="kraken.rpred.dewarp">
-<code class="descclassname">kraken.rpred.</code><code class="descname">dewarp</code><span class="sig-paren">(</span><em>normalizer</em>, <em>im</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.rpred.dewarp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dewarps an image of a line using a kraken.lib.lineest.CenterNormalizer
-instance.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>normalizer</strong> (<em>kraken.lib.lineest.CenterNormalizer</em>) – A line normalizer
-instance</li>
-<li><strong>im</strong> (<em>PIL.Image</em>) – Image to dewarp</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">PIL.Image containing the dewarped image.</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="kraken.rpred.extract_boxes">
-<code class="descclassname">kraken.rpred.</code><code class="descname">extract_boxes</code><span class="sig-paren">(</span><em>im</em>, <em>bounds</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.rpred.extract_boxes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Yields the subimages of image im defined in the list of bounding boxes in
-bounds preserving order.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>im</strong> (<em>PIL.Image</em>) – Input image</li>
-<li><strong>bounds</strong> (<em>list</em>) – A list of tuples (x1, y1, x2, y2)</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Yields:</th><td class="field-body"><p class="first last">(PIL.Image) the extracted subimage</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
 <dt id="kraken.rpred.mm_rpred">
-<code class="descclassname">kraken.rpred.</code><code class="descname">mm_rpred</code><span class="sig-paren">(</span><em>nets</em>, <em>im</em>, <em>bounds</em>, <em>pad=16</em>, <em>line_normalization=True</em>, <em>bidi_reordering=True</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.rpred.mm_rpred" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">kraken.rpred.</code><code class="descname">mm_rpred</code><span class="sig-paren">(</span><em>nets</em>, <em>im</em>, <em>bounds</em>, <em>pad=16</em>, <em>bidi_reordering=True</em>, <em>script_ignore=None</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.rpred.mm_rpred" title="Permalink to this definition">¶</a></dt>
 <dd><p>Multi-model version of kraken.rpred.rpred.</p>
 <p>Takes a dictionary of ISO15924 script identifiers-&gt;models and an
 script-annotated segmentation to dynamically select appropriate models for
@@ -287,7 +261,7 @@ these lines.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>nets</strong> (<em>dict</em>) – A dict mapping ISO15924 identifiers to SegRecognizer
+<li><strong>nets</strong> (<em>dict</em>) – A dict mapping ISO15924 identifiers to TorchSegRecognizer
 objects. Recommended to be an defaultdict.</li>
 <li><strong>im</strong> (<em>PIL.Image</em>) – Image to extract text from
 bounds (dict): A dictionary containing a ‘boxes’ entry
@@ -296,55 +270,46 @@ x1, y1)) of a text line in the image and an entry
 ‘text_direction’ containing
 ‘horizontal-lr/rl/vertical-lr/rl’.</li>
 <li><strong>pad</strong> (<em>int</em>) – Extra blank padding to the left and right of text line</li>
-<li><strong>line_normalization</strong> (<em>bool</em>) – Dewarp line using the line estimator
-contained in the network. If no normalizer
-is available one using the default
-parameters is created. By aware that you may
-have to scale lines manually to the target
-line height if disabled.</li>
 <li><strong>bidi_reordering</strong> (<em>bool</em>) – Reorder classes in the ocr_record according to
 the Unicode bidirectional algorithm for correct
 display.</li>
+<li><strong>script_ignore</strong> (<em>list</em>) – List of scripts to ignore during recognition</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Yields:</th><td class="field-body"><p class="first last">An ocr_record containing the recognized text, absolute character
+<tr class="field-even field"><th class="field-name">Yields:</th><td class="field-body"><p class="first">An ocr_record containing the recognized text, absolute character
 positions, and confidence values for each character.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li>KrakenInputException if the mapping between segmentation scripts and</li>
+<li>networks is incomplete.</li>
+</ul>
 </td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
-<dl class="class">
-<dt id="kraken.rpred.ocr_record">
-<em class="property">class </em><code class="descclassname">kraken.rpred.</code><code class="descname">ocr_record</code><span class="sig-paren">(</span><em>prediction</em>, <em>cuts</em>, <em>confidences</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.rpred.ocr_record" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">future.types.newobject.newobject</span></code></p>
-<p>A record object containing the recognition result of a single line</p>
-</dd></dl>
-
 <dl class="function">
 <dt id="kraken.rpred.rpred">
-<code class="descclassname">kraken.rpred.</code><code class="descname">rpred</code><span class="sig-paren">(</span><em>network</em>, <em>im</em>, <em>bounds</em>, <em>pad=16</em>, <em>line_normalization=True</em>, <em>bidi_reordering=True</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.rpred.rpred" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">kraken.rpred.</code><code class="descname">rpred</code><span class="sig-paren">(</span><em>network</em>, <em>im</em>, <em>bounds</em>, <em>pad=16</em>, <em>bidi_reordering=True</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.rpred.rpred" title="Permalink to this definition">¶</a></dt>
 <dd><p>Uses a RNN to recognize text</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>network</strong> (<em>kraken.lib.lstm.SegRecognizer</em>) – A SegRecognizer object</li>
+<li><strong>network</strong> (<em>kraken.lib.models.TorchSeqRecognizer</em>) – A TorchSegRecognizer
+object</li>
 <li><strong>im</strong> (<em>PIL.Image</em>) – Image to extract text from</li>
 <li><strong>bounds</strong> (<em>dict</em>) – A dictionary containing a ‘boxes’ entry with a list of
 coordinates (x0, y0, x1, y1) of a text line in the image
 and an entry ‘text_direction’ containing
 ‘horizontal-lr/rl/vertical-lr/rl’.</li>
-<li><strong>pad</strong> (<em>int</em>) – Extra blank padding to the left and right of text line</li>
-<li><strong>line_normalization</strong> (<em>bool</em>) – Dewarp line using the line estimator
-contained in the network. If no normalizer
-is available one using the default
-parameters is created. By aware that you may
-have to scale lines manually to the target
-line height if disabled.</li>
+<li><strong>pad</strong> (<em>int</em>) – Extra blank padding to the left and right of text line.
+Auto-disabled when expected network inputs are incompatible
+with padding.</li>
 <li><strong>bidi_reordering</strong> (<em>bool</em>) – Reorder classes in the ocr_record according to
 the Unicode bidirectional algorithm for correct
 display.</li>
@@ -360,75 +325,13 @@ positions, and confidence values for each character.</p>
 </dd></dl>
 
 </div>
+</div>
 <div class="section" id="kraken-transcribe-module">
 <h2>kraken.transcribe module<a class="headerlink" href="#kraken-transcribe-module" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-kraken.transcribe"></span><p>Utility functions for ground truth transcription.</p>
 </div>
-<div class="section" id="module-kraken.train">
-<span id="kraken-train-module"></span><h2>kraken.train module<a class="headerlink" href="#module-kraken.train" title="Permalink to this headline">¶</a></h2>
-<p>Utility functions for training CLSTM neural networks.</p>
-<dl class="class">
-<dt id="kraken.train.GroundTruthContainer">
-<em class="property">class </em><code class="descclassname">kraken.train.</code><code class="descname">GroundTruthContainer</code><span class="sig-paren">(</span><em>images=None</em>, <em>split=&lt;function &lt;lambda&gt;&gt;</em>, <em>suffix='.gt.txt'</em>, <em>normalization=None</em>, <em>reorder=True</em>, <em>partition=0.9</em>, <em>pad=16</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.train.GroundTruthContainer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Container for ground truth used during training.</p>
-<dl class="attribute">
-<dt id="kraken.train.GroundTruthContainer.training_set">
-<code class="descname">training_set</code><a class="headerlink" href="#kraken.train.GroundTruthContainer.training_set" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>list</em> – List of tuples (image, text) for training</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="kraken.train.GroundTruthContainer.test_set">
-<code class="descname">test_set</code><a class="headerlink" href="#kraken.train.GroundTruthContainer.test_set" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>list</em> – List of tuples (image, text) for testing</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="kraken.train.GroundTruthContainer.alphabet">
-<code class="descname">alphabet</code><a class="headerlink" href="#kraken.train.GroundTruthContainer.alphabet" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> – Sorted string of all codepoint found in the ground
-truth</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="kraken.train.GroundTruthContainer.add">
-<code class="descname">add</code><span class="sig-paren">(</span><em>image</em>, <em>split=&lt;function &lt;lambda&gt;&gt;</em>, <em>suffix='.gt.txt'</em>, <em>normalization=None</em>, <em>reorder=True</em>, <em>pad=16</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.train.GroundTruthContainer.add" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds a single image to the training set.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="kraken.train.GroundTruthContainer.repartition">
-<code class="descname">repartition</code><span class="sig-paren">(</span><em>partition=0.9</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.train.GroundTruthContainer.repartition" title="Permalink to this definition">¶</a></dt>
-<dd><p>Repartitions the training/test sets.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>partition</strong> (<em>float</em>) – Ground truth data partition ratio between
-training/test sets.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="kraken.train.GroundTruthContainer.sample">
-<code class="descname">sample</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kraken.train.GroundTruthContainer.sample" title="Permalink to this definition">¶</a></dt>
-<dd><p>Samples a line image-text pair from the training set.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A tuple (line, text) with line being a numpy.array run through
-kraken.lib.lstm.prepare_line.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="kraken-train-module">
+<h2>kraken.train module<a class="headerlink" href="#kraken-train-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-kraken.linegen">
 <span id="kraken-linegen-module"></span><h2>kraken.linegen module<a class="headerlink" href="#module-kraken.linegen" title="Permalink to this headline">¶</a></h2>
@@ -439,11 +342,12 @@ actual drawing code was adapted from the create_image utility from nototools
 available at [0].</p>
 <p>Line degradation uses a local model described in [1].</p>
 <p>[0] <a class="reference external" href="https://github.com/googlei18n/nototools">https://github.com/googlei18n/nototools</a>
-[1] Kanungo, Tapas, et al. “A statistical, nonparametric methodology for document degradation model validation.” IEEE Transactions on Pattern Analysis and Machine Intelligence 22.11 (2000): 1209-1223.</p>
+[1] Kanungo, Tapas, et al. “A statistical, nonparametric methodology for document degradation model validation.” IEEE Transactions on Pattern Analysis and Mach
+ine Intelligence 22.11 (2000): 1209-1223.</p>
 <dl class="class">
 <dt id="kraken.linegen.LineGenerator">
 <em class="property">class </em><code class="descclassname">kraken.linegen.</code><code class="descname">LineGenerator</code><span class="sig-paren">(</span><em>family='Sans'</em>, <em>font_size=32</em>, <em>font_weight=400</em>, <em>language=None</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.linegen.LineGenerator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">future.types.newobject.newobject</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Produces degraded line images using a single collection of font families.</p>
 <dl class="method">
 <dt id="kraken.linegen.LineGenerator.render_line">
@@ -474,7 +378,7 @@ Image.</p>
 
 <dl class="function">
 <dt id="kraken.linegen.ocropy_degrade">
-<code class="descclassname">kraken.linegen.</code><code class="descname">ocropy_degrade</code><span class="sig-paren">(</span><em>im, distort=1.0, dsigma=20.0, eps=0.03, delta=0.3, degradations=[(0.5, 0.0, 0.5, 0.0)]</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.linegen.ocropy_degrade" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">kraken.linegen.</code><code class="descname">ocropy_degrade</code><span class="sig-paren">(</span><em>im</em>, <em>distort=1.0</em>, <em>dsigma=20.0</em>, <em>eps=0.03</em>, <em>delta=0.3</em>, <em>degradations=(0.5</em>, <em>0.0</em>, <em>0.5</em>, <em>0.0)</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.linegen.ocropy_degrade" title="Permalink to this definition">¶</a></dt>
 <dd><p>Degrades and distorts a line using the same noise model used by ocropus.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -500,15 +404,25 @@ the degradations argument of ocropus-linegen.</li>
 
 <dl class="function">
 <dt id="kraken.linegen.degrade_line">
-<code class="descclassname">kraken.linegen.</code><code class="descname">degrade_line</code><span class="sig-paren">(</span><em>im</em>, <em>eta=0</em>, <em>alpha=1.5</em>, <em>beta=1.5</em>, <em>alpha_0=1</em>, <em>beta_0=1</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.linegen.degrade_line" title="Permalink to this definition">¶</a></dt>
-<dd><p>Degrades a line image by adding noise</p>
+<code class="descclassname">kraken.linegen.</code><code class="descname">degrade_line</code><span class="sig-paren">(</span><em>im</em>, <em>eta=0.0</em>, <em>alpha=1.5</em>, <em>beta=1.5</em>, <em>alpha_0=1.0</em>, <em>beta_0=1.0</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.linegen.degrade_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Degrades a line image by adding noise.</p>
+<p>For parameter meanings consult [1].</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>im</strong> (<em>PIL.Image</em>) – Input image</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>im</strong> (<em>PIL.Image</em>) – Input image</li>
+<li><strong>eta</strong> (<em>float</em>) – </li>
+<li><strong>alpha</strong> (<em>float</em>) – </li>
+<li><strong>beta</strong> (<em>float</em>) – </li>
+<li><strong>alpha_0</strong> (<em>float</em>) – </li>
+<li><strong>beta_0</strong> (<em>float</em>) – </li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">PIL.Image in mode ‘1’</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">PIL.Image in mode ‘1’</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -518,6 +432,7 @@ the degradations argument of ocropus-linegen.</li>
 <dt id="kraken.linegen.distort_line">
 <code class="descclassname">kraken.linegen.</code><code class="descname">distort_line</code><span class="sig-paren">(</span><em>im</em>, <em>distort=3.0</em>, <em>sigma=10</em>, <em>eps=0.03</em>, <em>delta=0.3</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.linegen.distort_line" title="Permalink to this definition">¶</a></dt>
 <dd><p>Distorts a line image.</p>
+<p>Run BEFORE degrade_line as a white border of 5 pixels will be added.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -544,6 +459,7 @@ the degradations argument of ocropus-linegen.</li>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -554,12 +470,21 @@ the degradations argument of ocropus-linegen.</li>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">kraken API</a><ul>
-<li><a class="reference internal" href="#module-kraken.binarization">kraken.binarization module</a></li>
+<li><a class="reference internal" href="#module-kraken.binarization">kraken.binarization module</a><ul>
+<li><a class="reference internal" href="#kraken-binarization">kraken.binarization</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-kraken.serialization">kraken.serialization module</a></li>
-<li><a class="reference internal" href="#module-kraken.pageseg">kraken.pageseg module</a></li>
-<li><a class="reference internal" href="#module-kraken.rpred">kraken.rpred module</a></li>
+<li><a class="reference internal" href="#module-kraken.pageseg">kraken.pageseg module</a><ul>
+<li><a class="reference internal" href="#kraken-pageseg">kraken.pageseg</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-kraken.rpred">kraken.rpred module</a><ul>
+<li><a class="reference internal" href="#kraken-rpred">kraken.rpred</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#kraken-transcribe-module">kraken.transcribe module</a></li>
-<li><a class="reference internal" href="#module-kraken.train">kraken.train module</a></li>
+<li><a class="reference internal" href="#kraken-train-module">kraken.train module</a></li>
 <li><a class="reference internal" href="#module-kraken.linegen">kraken.linegen module</a><ul>
 <li><a class="reference internal" href="#linegen">linegen</a></li>
 </ul>
@@ -578,14 +503,24 @@ the degradations argument of ocropus-linegen.</li>
 </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+<h3>Versions</h3>
+<ul>
+    <li><a href="master/api.html">master</a></li>
+    <li><a href="0.10.0/api.html">0.10.0</a></li>
+    <li><a href="0.4.0/api.html">0.4.0</a></li>
+    <li><a href="0.8.0/api.html">0.8.0</a></li>
+    <li><a href="0.9.0/api.html">0.9.0</a></li>
+</ul>
         </div>
       </div>
       <div class="clearer"></div>
@@ -594,8 +529,8 @@ the degradations argument of ocropus-linegen.</li>
       &copy;2015, mittagessen.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.5</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
       
       |
       <a href="_sources/api.rst.txt"

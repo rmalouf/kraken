@@ -4,21 +4,13 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Training &#8212; kraken 0.9.8-1-gf898512
- documentation</title>
+    <title>Training &#8212; kraken  documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.9.8-1-gf898512',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" href="_static/banner.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
@@ -32,29 +24,36 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
-  <div class="section" id="training">
+  
+
+
+
+
+
+<div class="section" id="training">
 <h1>Training<a class="headerlink" href="#training" title="Permalink to this headline">¶</a></h1>
 <p>Thanks to the magic of <a class="reference external" href="ftp://ftp.idsia.ch/pub/juergen/icml2006.pdf">Connectionist Temporal Classification</a> prerequisites for creating a
 new recognition model are quite modest. The basic requirement is a number of
-text lines (<code class="docutils literal"><span class="pre">ground</span> <span class="pre">truth</span></code>) that correspond to line images and some time for
+text lines (<code class="docutils literal notranslate"><span class="pre">ground</span> <span class="pre">truth</span></code>) that correspond to line images and some time for
 training.</p>
-<p>Training tasks are covered by subcommands attached to the <code class="docutils literal"><span class="pre">ketos</span></code> command.</p>
+<p>Training tasks are covered by subcommands attached to the <code class="docutils literal notranslate"><span class="pre">ketos</span></code> command.</p>
 <div class="section" id="transcription">
 <h2>Transcription<a class="headerlink" href="#transcription" title="Permalink to this headline">¶</a></h2>
 <p>Transcription is done through local browser based HTML transcription
-environments. These are created by the <code class="docutils literal"><span class="pre">ketos</span> <span class="pre">transcribe</span></code> command line util.
+environments. These are created by the <code class="docutils literal notranslate"><span class="pre">ketos</span> <span class="pre">transcribe</span></code> command line util.
 Its basic input is just a number of image files and an output path to write the
 HTML file to:</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> ketos transcribe -o output.html image_1.png image_2.png ...
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ketos transcribe -o output.html image_1.png image_2.png ...
 </pre></div>
 </div>
 <p>While it is possible to put multiple images into a single transcription
@@ -70,7 +69,7 @@ are systematic and relatively minor.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">The page segmentation algorithm extracting lines from images is
-optimized for <code class="docutils literal"><span class="pre">western</span></code> page layouts and may recognize lines
+optimized for <code class="docutils literal notranslate"><span class="pre">western</span></code> page layouts and may recognize lines
 erroneously, lumping multiple lines together or cutting them in half.
 The most efficient way to deal with these errors is just skipping the
 affected lines by leaving the text box empty.</p>
@@ -83,13 +82,13 @@ exists (but does not for typographically similar prints) or find a
 sufficiently similar edition as a base.</p>
 </div>
 <p>After transcribing a number of lines the results have to be saved, either using
-the <code class="docutils literal"><span class="pre">Download</span></code> button on the lower right or through the regular <code class="docutils literal"><span class="pre">Save</span> <span class="pre">Page</span>
+the <code class="docutils literal notranslate"><span class="pre">Download</span></code> button on the lower right or through the regular <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">Page</span>
 <span class="pre">As</span></code> function of the browser. All the work done is contained directly in the
 saved files and it is possible to save partially transcribed files and continue
 work later.</p>
 <p>Next the contents of the filled transcription environments have to be
-extracted through the <code class="docutils literal"><span class="pre">ketos</span> <span class="pre">extract</span></code> command:</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> ketos extract --reorder --output output_directory --normalization NFD *.html
+extracted through the <code class="docutils literal notranslate"><span class="pre">ketos</span> <span class="pre">extract</span></code> command:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ketos extract --reorder --output output_directory --normalization NFD *.html
 </pre></div>
 </div>
 <p>with</p>
@@ -102,7 +101,7 @@ extracted through the <code class="docutils literal"><span class="pre">ketos</sp
 <td>Tells ketos to reorder the code point for each line into left-to-right
 order. Unicode code points are always in reading order, e.g. the first
 code point in an Arabic line will be the rightmost character. This
-option reorders them into <code class="docutils literal"><span class="pre">display</span> <span class="pre">order</span></code>, i.e. the first code point
+option reorders them into <code class="docutils literal notranslate"><span class="pre">display</span> <span class="pre">order</span></code>, i.e. the first code point
 is the leftmost, the second one the next from the left and so on. As
 the neural network does not know beforehand if part of an image
 contains left-to-right or right-to-left text, all glyphs are assumed to
@@ -117,10 +116,10 @@ are written.</td></tr>
 <tr><td>&#160;</td><td>Unicode has code points to encode most glyphs encountered in the wild.
 A lesser known feature is that there usually are multiple ways to
 encode a string of printed characters, i.e. a series of what a human
-would consider a single character (in Unicode jargon <code class="docutils literal"><span class="pre">grapheme</span>
+would consider a single character (in Unicode jargon <code class="docutils literal notranslate"><span class="pre">grapheme</span>
 <span class="pre">clusters</span></code>) in multiple ways. Crucially, accented characters marks may
-either be a single code point (<code class="docutils literal"><span class="pre">precomposed</span></code>) or two or more separate
-symbols (<code class="docutils literal"><span class="pre">decomposed</span></code>). Many texts contain a mixture of both.
+either be a single code point (<code class="docutils literal notranslate"><span class="pre">precomposed</span></code>) or two or more separate
+symbols (<code class="docutils literal notranslate"><span class="pre">decomposed</span></code>). Many texts contain a mixture of both.
 <a class="reference external" href="http://www.unicode.org/reports/tr15/">Unicode normalization</a> ensures
 that equal grapheme cluster are encoded in the same way, i.e. that the
 encoded representation across the training data set is consistent and
@@ -130,14 +129,14 @@ Normalization Form Decomposed (NFD), as it reduces the the size of the
 overall script to be recognized slightly.</td></tr>
 </tbody>
 </table>
-<p>The result will be a directory filled with line image text pairs <code class="docutils literal"><span class="pre">NNNNNN.png</span></code>
-and <code class="docutils literal"><span class="pre">NNNNNN.gt.txt</span></code> and a <code class="docutils literal"><span class="pre">manifest.txt</span></code> containing a list of all extracted
+<p>The result will be a directory filled with line image text pairs <code class="docutils literal notranslate"><span class="pre">NNNNNN.png</span></code>
+and <code class="docutils literal notranslate"><span class="pre">NNNNNN.gt.txt</span></code> and a <code class="docutils literal notranslate"><span class="pre">manifest.txt</span></code> containing a list of all extracted
 lines.</p>
 </div>
 <div class="section" id="id1">
 <h2>Training<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>Currently kraken does not contain a training interface. Use the
-<code class="docutils literal"><span class="pre">clstmocrtrain</span></code> command contained in the CLSTM distribution.</p>
+<code class="docutils literal notranslate"><span class="pre">clstmocrtrain</span></code> command contained in the CLSTM distribution.</p>
 </div>
 <div class="section" id="validation">
 <h2>Validation<a class="headerlink" href="#validation" title="Permalink to this headline">¶</a></h2>
@@ -164,7 +163,7 @@ assemble a wide variety of fonts for non-Latin scripts.</li>
 typical example of the type of printed works you want to recognize and at least
 500-1000 lines in length.</p>
 <p>A minimal invocation to the line generation tool will look like this:</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> ketos linegen -f Amiri da1.txt da2.txt
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ketos linegen -f Amiri da1.txt da2.txt
 <span class="go">Reading texts   ✓</span>
 <span class="go">Read 3692 unique lines</span>
 <span class="go">Σ (len: 99)</span>
@@ -172,27 +171,27 @@ typical example of the type of printed works you want to recognize and at least
 <span class="go">Writing images  ✓</span>
 </pre></div>
 </div>
-<p>The output will be written to a directory called <code class="docutils literal"><span class="pre">training_data</span></code>, although
-this may be changed using the <code class="docutils literal"><span class="pre">-o</span></code> option. Each text line is rendered using
+<p>The output will be written to a directory called <code class="docutils literal notranslate"><span class="pre">training_data</span></code>, although
+this may be changed using the <code class="docutils literal notranslate"><span class="pre">-o</span></code> option. Each text line is rendered using
 the Amiri typeface.</p>
 <div class="section" id="alphabet-and-normalization">
 <h3>Alphabet and Normalization<a class="headerlink" href="#alphabet-and-normalization" title="Permalink to this headline">¶</a></h3>
 <p>Let’s take a look at important information in the preamble:</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">Read 3692 unique lines</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Read 3692 unique lines</span>
 <span class="go">Σ (len: 99)</span>
 <span class="go">Symbols:  !(),-./0123456789:ABEFGHILMNPRS[]_acdefghiklmnoprstuvyz«»،؟ﺀﺁﺃﺅﺈﺋﺎﺑﺔﺘﺜﺠﺤﺧﺩﺫﺭﺰﺴﺸﺼﻀﻄﻈﻌﻐـﻔﻘﻜﻠﻤﻨﻫﻭﻰﻳپ</span>
 </pre></div>
 </div>
 <p>ketos tells us that it found 3692 unique lines which contained 99 different
-<code class="docutils literal"><span class="pre">symbols</span></code> or <code class="docutils literal"><span class="pre">code</span> <span class="pre">points</span></code>.  We can see the training data contains all of
+<code class="docutils literal notranslate"><span class="pre">symbols</span></code> or <code class="docutils literal notranslate"><span class="pre">code</span> <span class="pre">points</span></code>.  We can see the training data contains all of
 the Arabic script including accented precomposed characters, but only a subset
 of Latin characters, numerals, and punctuation. A trained model will be able to
-recognize only these exact symbols, e.g. a <code class="docutils literal"><span class="pre">C</span></code> or <code class="docutils literal"><span class="pre">j</span></code> on the page will
+recognize only these exact symbols, e.g. a <code class="docutils literal notranslate"><span class="pre">C</span></code> or <code class="docutils literal notranslate"><span class="pre">j</span></code> on the page will
 never be recognized. Either accept this limitation or add additional text lines
 to the training corpus until the alphabet matches your needs.</p>
-<p>We can also force a normalization form using the <code class="docutils literal"><span class="pre">-u</span></code> option; per default
+<p>We can also force a normalization form using the <code class="docutils literal notranslate"><span class="pre">-u</span></code> option; per default
 none is applied. For example:</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> ketos linegen -u NFD -f <span class="s2">&quot;GFS Philostratos&quot;</span> grc.txt
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ketos linegen -u NFD -f <span class="s2">&quot;GFS Philostratos&quot;</span> grc.txt
 <span class="go">Reading texts   ✓</span>
 <span class="go">Read 2860 unique lines</span>
 <span class="go">Σ (len: 132)</span>
@@ -215,8 +214,8 @@ size and easier validation of the alphabet.</p>
 <div class="section" id="other-parameters">
 <h3>Other Parameters<a class="headerlink" href="#other-parameters" title="Permalink to this headline">¶</a></h3>
 <p>Sometimes it is desirable to draw a certain number of lines randomly from one
-or more large texts. The <code class="docutils literal"><span class="pre">-n</span></code> option does just that:</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> ketos linegen -u NFD -n <span class="m">100</span> -f Amiri da1.txt da2.txt da3.txt da4.txt
+or more large texts. The <code class="docutils literal notranslate"><span class="pre">-n</span></code> option does just that:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ketos linegen -u NFD -n <span class="m">100</span> -f Amiri da1.txt da2.txt da3.txt da4.txt
 <span class="go">Reading texts   ✓</span>
 <span class="go">Read 114265 unique lines</span>
 <span class="go">Sampling 100 lines      ✓</span>
@@ -227,8 +226,8 @@ or more large texts. The <code class="docutils literal"><span class="pre">-n</sp
 </pre></div>
 </div>
 <p>It is also possible to adjust to amount of degradation/distortion of line
-images by using the <code class="docutils literal"><span class="pre">-s/-r/-d/-ds</span></code> switches:</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> ketos linegen -m <span class="m">0</span>.2 -s <span class="m">0</span>.002 -r <span class="m">0</span>.001 -d <span class="m">3</span> Downloads/D/A/da1.txt
+images by using the <code class="docutils literal notranslate"><span class="pre">-s/-r/-d/-ds</span></code> switches:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ketos linegen -m <span class="m">0</span>.2 -s <span class="m">0</span>.002 -r <span class="m">0</span>.001 -d <span class="m">3</span> Downloads/D/A/da1.txt
 <span class="go">Reading texts   ✓</span>
 <span class="go">Read 859 unique lines</span>
 <span class="go">Σ (len: 46)</span>
@@ -236,12 +235,12 @@ images by using the <code class="docutils literal"><span class="pre">-s/-r/-d/-d
 <span class="go">Writing images  ⣽</span>
 </pre></div>
 </div>
-<p>Sometimes the shaping engine misbehaves using some fonts (notably <code class="docutils literal"><span class="pre">GFS</span>
+<p>Sometimes the shaping engine misbehaves using some fonts (notably <code class="docutils literal notranslate"><span class="pre">GFS</span>
 <span class="pre">Philostratos</span></code>) by rendering texts in certain normalizations incorrectly if the
 font does not contain glyphs for decomposed characters. One sign are misplaced
 diacritics and glyphs in different fonts. A workaround is renormalizing the
 text for rendering purposes (here to NFC):</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> ketos linegen -ur NFC -u NFD -f <span class="s2">&quot;GFS Philostratos&quot;</span> grc.txt
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ketos linegen -ur NFC -u NFD -f <span class="s2">&quot;GFS Philostratos&quot;</span> grc.txt
 </pre></div>
 </div>
 </div>
@@ -250,6 +249,7 @@ text for rendering purposes (here to NFC):</p>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -282,14 +282,24 @@ text for rendering purposes (here to NFC):</p>
 </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+<h3>Versions</h3>
+<ul>
+    <li><a href="master/ketos.html">master</a></li>
+    <li><a href="0.10.0/ketos.html">0.10.0</a></li>
+    <li><a href="0.4.0/index.html">0.4.0</a></li>
+    <li><a href="0.8.0/ketos.html">0.8.0</a></li>
+    <li><a href="0.9.0/ketos.html">0.9.0</a></li>
+</ul>
         </div>
       </div>
       <div class="clearer"></div>
@@ -298,8 +308,8 @@ text for rendering purposes (here to NFC):</p>
       &copy;2015, mittagessen.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.5</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
       
       |
       <a href="_sources/ketos.rst.txt"

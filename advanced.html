@@ -4,21 +4,13 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Advanced usage &#8212; kraken 0.9.8-1-gf898512
- documentation</title>
+    <title>Advanced usage &#8212; kraken  documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.9.8-1-gf898512',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" href="_static/banner.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
@@ -32,16 +24,23 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
-  <div class="section" id="advanced-usage">
+  
+
+
+
+
+
+<div class="section" id="advanced-usage">
 <h1>Advanced usage<a class="headerlink" href="#advanced-usage" title="Permalink to this headline">¶</a></h1>
 <p>Optical character recognition is the serial execution of multiple steps, in the
 case of kraken binarization (converting color and grayscale images into bitonal
@@ -53,7 +52,7 @@ ALTO.</p>
 <h2>Input specification<a class="headerlink" href="#input-specification" title="Permalink to this headline">¶</a></h2>
 <p>All kraken subcommands operating on input-output pairs, i.e. producing one
 output document for one input document follow the basic syntax:</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> kraken -i input_1 output_1 -i input_2 output_2 ... subcommand_1 subcommand_2 ... subcommand_n
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> kraken -i input_1 output_1 -i input_2 output_2 ... subcommand_1 subcommand_2 ... subcommand_n
 </pre></div>
 </div>
 <p>In particular subcommands may be chained.</p>
@@ -61,7 +60,7 @@ output document for one input document follow the basic syntax:</p>
 <div class="section" id="binarization">
 <h2>Binarization<a class="headerlink" href="#binarization" title="Permalink to this headline">¶</a></h2>
 <p>The binarization subcommand accepts almost the same parameters as
-<code class="docutils literal"><span class="pre">ocropus-nlbin</span></code>. Only options not related to binarization, e.g. skew
+<code class="docutils literal notranslate"><span class="pre">ocropus-nlbin</span></code>. Only options not related to binarization, e.g. skew
 detection are missing. In addition, error checking (image sizes, inversion
 detection, grayscale enforcement) is always disabled and kraken will happily
 binarize any image that is thrown at it.</p>
@@ -117,7 +116,7 @@ right-to-left).</p>
 <p>Each list in the <cite>boxes</cite> field corresponds to a topographical line and contains
 one or more bounding boxes of a particular script. Identifiers are <a class="reference external" href="http://www.unicode.org/iso15924/iso15924-codes.html">ISO 15924</a> 4 character codes.
 Script-aware page segmentation is a prerequisite for multi-script recognition.</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> kraken -i <span class="m">14</span>.tif lines.txt segment
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> kraken -i <span class="m">14</span>.tif lines.txt segment
 <span class="gp">$</span> cat lines.json
 <span class="go">{</span>
 <span class="go">   &quot;boxes&quot; : [</span>
@@ -144,7 +143,7 @@ Script-aware page segmentation is a prerequisite for multi-script recognition.</
 <p>Script detection is automatically enabled when the CLSTM bindings are
 installed. Without the bindings or by explicitly disabling script detection the
 <cite>boxes</cite> field will contain only a list of line bounding boxes:</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">[546, 216, 1626, 309],</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">[546, 216, 1626, 309],</span>
 <span class="go">[2169, 197, 2423, 244],</span>
 <span class="go">[1676, 221, 2293, 320],</span>
 <span class="go">...</span>
@@ -191,17 +190,17 @@ installed. Without the bindings or by explicitly disabling script detection the
 models that can be accessed from the command line using a few subcommands. For
 evaluating a series of models it is also possible to just clone the repository
 using the normal git client.</p>
-<p>The <code class="docutils literal"><span class="pre">list</span></code> subcommand retrieves a list of all models available and prints
+<p>The <code class="docutils literal notranslate"><span class="pre">list</span></code> subcommand retrieves a list of all models available and prints
 them including some additional information (identifier, type, and a short
 description):</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> kraken list
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> kraken list
 <span class="go">Retrieving model list   ✓</span>
 <span class="go">default (pyrnn) - A converted version of en-default.pyrnn.gz</span>
 <span class="go">toy (clstm) - A toy model trained on 400 lines of the UW3 data set.</span>
 </pre></div>
 </div>
-<p>To access more detailed information the <code class="docutils literal"><span class="pre">show</span></code> subcommand may be used:</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> kraken show toy
+<p>To access more detailed information the <code class="docutils literal notranslate"><span class="pre">show</span></code> subcommand may be used:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> kraken show toy
 <span class="go">name: toy.clstm</span>
 
 <span class="go">A toy model trained on 400 lines of the UW3 data set.</span>
@@ -210,15 +209,15 @@ description):</p>
 <span class="go">http://kraken.re</span>
 </pre></div>
 </div>
-<p>If a suitable model has been decided upon it can be retrieved using the <code class="docutils literal"><span class="pre">get</span></code>
+<p>If a suitable model has been decided upon it can be retrieved using the <code class="docutils literal notranslate"><span class="pre">get</span></code>
 subcommand:</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> kraken get toy
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> kraken get toy
 <span class="go">Retrieving model        ✓</span>
 </pre></div>
 </div>
 <p>Models will be placed in $XDG_BASE_DIR and can be accessed using their name as
-shown by the <code class="docutils literal"><span class="pre">show</span></code> command, e.g.:</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> kraken -i ... ... ocr -m toy
+shown by the <code class="docutils literal notranslate"><span class="pre">show</span></code> command, e.g.:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> kraken -i ... ... ocr -m toy
 </pre></div>
 </div>
 <p>Additions and updates to existing models are always welcome! Just open a pull
@@ -228,37 +227,37 @@ request or write an email.</p>
 <h2>Recognition<a class="headerlink" href="#recognition" title="Permalink to this headline">¶</a></h2>
 <p>Recognition requires a grey-scale or binarized image, a page segmentation for
 that image, and a pyrnn or protobuf model. In particular there is no
-requirement to use the page segmentation algorithm contained in the <code class="docutils literal"><span class="pre">segment</span></code>
+requirement to use the page segmentation algorithm contained in the <code class="docutils literal notranslate"><span class="pre">segment</span></code>
 subcommand or the binarization provided by kraken.</p>
 <p>Multi-script recognition is possible by supplying a script-annotated
 segmentation and a mapping between scripts and models:</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> kraken -i ... ... ocr -m Grek:porson.clstm -m Latn:antiqua.clstm
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> kraken -i ... ... ocr -m Grek:porson.clstm -m Latn:antiqua.clstm
 </pre></div>
 </div>
 <p>All polytonic Greek text portions will be recognized using the <cite>porson.clstm</cite>
 model while Latin text will be fed into the <cite>antiqua.clstm</cite> model. It is
 possible to define a fallback model that other text will be fed to:</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> kraken -i ... ... ocr -m ... -m ... -m default:porson.clstm
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> kraken -i ... ... ocr -m ... -m ... -m default:porson.clstm
 </pre></div>
 </div>
 <p>Because script detection is not 100% reliable and sometimes single characters
 are misclassified, the main text should usually be recognized using the
 <cite>default</cite> model and secondary scripts explicitly assigned other models.</p>
-<p>The <code class="docutils literal"><span class="pre">ocr</span></code> subcommand is able to serialize the recognition results either as
+<p>The <code class="docutils literal notranslate"><span class="pre">ocr</span></code> subcommand is able to serialize the recognition results either as
 plain text (default), as <a class="reference external" href="http://hocr.info">hOCR</a>, or into <a class="reference external" href="http://www.loc.gov/standards/alto/">ALTO</a> containing additional metadata such as
 bounding boxes and confidences:</p>
-<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> kraken -i ... ... ocr -t <span class="c1"># text output</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> kraken -i ... ... ocr -t <span class="c1"># text output</span>
 <span class="gp">$</span> kraken -i ... ... ocr -h <span class="c1"># hOCR output</span>
 <span class="gp">$</span> kraken -i ... ... ocr -a <span class="c1"># ALTO output</span>
 </pre></div>
 </div>
 <p>hOCR output is slightly different from hOCR files produced by ocropus. Each
-<code class="docutils literal"><span class="pre">ocr_line</span></code> span contains not only the bounding box of the line but also
-character boxes (<code class="docutils literal"><span class="pre">x_bboxes</span></code> attribute) indicating the coordinates of each
+<code class="docutils literal notranslate"><span class="pre">ocr_line</span></code> span contains not only the bounding box of the line but also
+character boxes (<code class="docutils literal notranslate"><span class="pre">x_bboxes</span></code> attribute) indicating the coordinates of each
 character. In each line alternating sequences of alphanumeric and
-non-alphanumeric (in the unicode sense) characters are put into <code class="docutils literal"><span class="pre">ocrx_word</span></code>
+non-alphanumeric (in the unicode sense) characters are put into <code class="docutils literal notranslate"><span class="pre">ocrx_word</span></code>
 spans. Both have bounding boxes as attributes and the recognition confidence
-for each character in the <code class="docutils literal"><span class="pre">x_conf</span></code> attribute.</p>
+for each character in the <code class="docutils literal notranslate"><span class="pre">x_conf</span></code> attribute.</p>
 <p>Paragraph detection has been removed as it was deemed to be unduly dependent on
 certain typographic features which may not be valid for your input.</p>
 </div>
@@ -266,6 +265,7 @@ certain typographic features which may not be valid for your input.</p>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -295,14 +295,24 @@ certain typographic features which may not be valid for your input.</p>
 </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+<h3>Versions</h3>
+<ul>
+    <li><a href="master/advanced.html">master</a></li>
+    <li><a href="0.10.0/advanced.html">0.10.0</a></li>
+    <li><a href="0.4.0/advanced.html">0.4.0</a></li>
+    <li><a href="0.8.0/advanced.html">0.8.0</a></li>
+    <li><a href="0.9.0/advanced.html">0.9.0</a></li>
+</ul>
         </div>
       </div>
       <div class="clearer"></div>
@@ -311,8 +321,8 @@ certain typographic features which may not be valid for your input.</p>
       &copy;2015, mittagessen.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.5</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
       
       |
       <a href="_sources/advanced.rst.txt"

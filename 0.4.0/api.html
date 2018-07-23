@@ -1,0 +1,382 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>kraken API &#8212; kraken  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/banner.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Models" href="models.html" />
+    <link rel="prev" title="Advanced usage" href="advanced.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  
+
+
+    
+    
+
+
+
+    <p class="scv-banner"><a href="../0.10.0/api.html"><b>Warning:</b> This document is for an old version of kraken. The latest version is 0.10.0.</a></p>
+<div class="section" id="module-kraken">
+<span id="kraken-api"></span><h1>kraken API<a class="headerlink" href="#module-kraken" title="Permalink to this headline">¶</a></h1>
+<p>Kraken provides routines which are usable by third party tools. In general
+you can expect function in the <code class="docutils literal notranslate"><span class="pre">kraken</span></code> package to remain stable. We will try
+to keep these backward compatible, but as kraken is still in an early
+development stage and the API is still quite rudimentary nothing can be
+garantueed.</p>
+<div class="section" id="module-kraken.binarization">
+<span id="kraken-binarization-module"></span><h2>kraken.binarization module<a class="headerlink" href="#module-kraken.binarization" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="kraken-binarization">
+<h3>kraken.binarization<a class="headerlink" href="#kraken-binarization" title="Permalink to this headline">¶</a></h3>
+<p>An adaptive binarization algorithm.</p>
+<dl class="function">
+<dt id="kraken.binarization.is_bitonal">
+<code class="descclassname">kraken.binarization.</code><code class="descname">is_bitonal</code><span class="sig-paren">(</span><em>im</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.binarization.is_bitonal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests a PIL.Image for bitonality.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>im</strong> (<em>PIL.Image</em>) – Image to test</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if the image contains only two different color values. False
+otherwise.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="kraken.binarization.nlbin">
+<code class="descclassname">kraken.binarization.</code><code class="descname">nlbin</code><span class="sig-paren">(</span><em>im</em>, <em>threshold=0.5</em>, <em>zoom=0.5</em>, <em>escale=1.0</em>, <em>border=0.1</em>, <em>perc=80</em>, <em>range=20</em>, <em>low=5</em>, <em>high=90</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.binarization.nlbin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs binarization using non-linear processing.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>im</strong> (<em>PIL.Image</em>) – </li>
+<li><strong>threshold</strong> (<em>float</em>) – </li>
+<li><strong>zoom</strong> (<em>float</em>) – Zoom for background page estimation</li>
+<li><strong>escale</strong> (<em>float</em>) – Scale for estimating a mask over the text region</li>
+<li><strong>border</strong> (<em>float</em>) – Ignore this much of the border</li>
+<li><strong>perc</strong> (<em>int</em>) – Percentage for filters</li>
+<li><strong>range</strong> (<em>int</em>) – Range for filters</li>
+<li><strong>low</strong> (<em>int</em>) – Percentile for black estimation</li>
+<li><strong>high</strong> (<em>int</em>) – Percentile for white estimation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">PIL.Image containing the binarized image</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">KrakenInputException when trying to binarize an empty image.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="kraken-html-module">
+<h2>kraken.html module<a class="headerlink" href="#kraken-html-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-kraken.pageseg">
+<span id="kraken-pageseg-module"></span><h2>kraken.pageseg module<a class="headerlink" href="#module-kraken.pageseg" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="kraken-pageseg">
+<h3>kraken.pageseg<a class="headerlink" href="#kraken-pageseg" title="Permalink to this headline">¶</a></h3>
+<p>Layout analysis and script detection methods.</p>
+<dl class="function">
+<dt id="kraken.pageseg.segment">
+<code class="descclassname">kraken.pageseg.</code><code class="descname">segment</code><span class="sig-paren">(</span><em>im</em>, <em>text_direction='horizontal-lr'</em>, <em>scale=None</em>, <em>maxcolseps=2</em>, <em>black_colseps=False</em>, <em>no_hlines=True</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.pageseg.segment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Segments a page into text lines.</p>
+<p>Segments a page into text lines and returns the absolute coordinates of
+each line in reading order.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>im</strong> (<em>PIL.Image</em>) – A bi-level page of mode ‘1’ or ‘L’</li>
+<li><strong>text_direction</strong> (<em>str</em>) – Principal direction of the text
+(horizontal-lr/rl/vertical-lr/rl)</li>
+<li><strong>scale</strong> (<em>float</em>) – Scale of the image</li>
+<li><strong>maxcolseps</strong> (<em>int</em>) – Maximum number of whitespace column separators</li>
+<li><strong>black_colseps</strong> (<em>bool</em>) – Whether column separators are assumed to be
+vertical black lines or not</li>
+<li><strong>no_hlines</strong> (<em>bool</em>) – Switch for horizontal line removal</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">‘$dir’, ‘boxes’: [(x1, y1, x2, y2),…]}: A
+dictionary containing the text direction and a list of reading order
+sorted bounding boxes under the key ‘boxes’.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">{‘text_direction’</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li>KrakenInputException if the input image is not binarized or the text</li>
+<li>direction is invalid.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="kraken.pageseg.detect_scripts">
+<code class="descclassname">kraken.pageseg.</code><code class="descname">detect_scripts</code><span class="sig-paren">(</span><em>im</em>, <em>bounds</em>, <em>model='/home/mittagessen/git/kraken/kraken/script.mlmodel'</em>, <em>valid_scripts=None</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.pageseg.detect_scripts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detects scripts in a segmented page.</p>
+<p>Classifies lines returned by the page segmenter into runs of scripts/writing systems.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>im</strong> (<em>PIL.Image</em>) – A bi-level page of mode ‘1’ or ‘L’</li>
+<li><strong>bounds</strong> (<em>dict</em>) – A dictionary containing a ‘boxes’ entry with a list of
+coordinates (x0, y0, x1, y1) of a text line in the image
+and an entry ‘text_direction’ containing
+‘horizontal-lr/rl/vertical-lr/rl’.</li>
+<li><strong>model</strong> (<em>str</em>) – Location of the script classification model or None for default.</li>
+<li><strong>valid_scripts</strong> (<em>list</em>) – List of valid scripts.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True, ‘text_direction’: ‘$dir’, ‘boxes’:
+[[(script, (x1, y1, x2, y2)),…]]}: A dictionary containing the text
+direction and a list of lists of reading order sorted bounding boxes
+under the key ‘boxes’ with each list containing the script segmentation
+of a single line. Script is a ISO15924 4 character identifier.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">{‘script_detection’</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">KrakenInvalidModelException if no clstm module is available.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-kraken.rpred">
+<span id="kraken-rpred-module"></span><h2>kraken.rpred module<a class="headerlink" href="#module-kraken.rpred" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="kraken-rpred">
+<h3>kraken.rpred<a class="headerlink" href="#kraken-rpred" title="Permalink to this headline">¶</a></h3>
+<p>Generators for recognition on lines images.</p>
+<dl class="class">
+<dt id="kraken.rpred.ocr_record">
+<em class="property">class </em><code class="descclassname">kraken.rpred.</code><code class="descname">ocr_record</code><span class="sig-paren">(</span><em>prediction</em>, <em>cuts</em>, <em>confidences</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.rpred.ocr_record" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A record object containing the recognition result of a single line</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kraken.rpred.bidi_record">
+<code class="descclassname">kraken.rpred.</code><code class="descname">bidi_record</code><span class="sig-paren">(</span><em>record</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.rpred.bidi_record" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reorders a record using the Unicode BiDi algorithm.</p>
+<p>Models trained for RTL or mixed scripts still emit classes in LTR order
+requiring reordering for proper display.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>record</strong> (<a class="reference internal" href="#kraken.rpred.ocr_record" title="kraken.rpred.ocr_record"><em>kraken.rpred.ocr_record</em></a>) – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">kraken.rpred.ocr_record</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="kraken.rpred.mm_rpred">
+<code class="descclassname">kraken.rpred.</code><code class="descname">mm_rpred</code><span class="sig-paren">(</span><em>nets</em>, <em>im</em>, <em>bounds</em>, <em>pad=16</em>, <em>bidi_reordering=True</em>, <em>script_ignore=None</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.rpred.mm_rpred" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multi-model version of kraken.rpred.rpred.</p>
+<p>Takes a dictionary of ISO15924 script identifiers-&gt;models and an
+script-annotated segmentation to dynamically select appropriate models for
+these lines.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>nets</strong> (<em>dict</em>) – A dict mapping ISO15924 identifiers to TorchSegRecognizer
+objects. Recommended to be an defaultdict.</li>
+<li><strong>im</strong> (<em>PIL.Image</em>) – Image to extract text from
+bounds (dict): A dictionary containing a ‘boxes’ entry
+with a list of lists of coordinates (script, (x0, y0,
+x1, y1)) of a text line in the image and an entry
+‘text_direction’ containing
+‘horizontal-lr/rl/vertical-lr/rl’.</li>
+<li><strong>pad</strong> (<em>int</em>) – Extra blank padding to the left and right of text line</li>
+<li><strong>bidi_reordering</strong> (<em>bool</em>) – Reorder classes in the ocr_record according to
+the Unicode bidirectional algorithm for correct
+display.</li>
+<li><strong>script_ignore</strong> (<em>list</em>) – List of scripts to ignore during recognition</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Yields:</th><td class="field-body"><p class="first">An ocr_record containing the recognized text, absolute character
+positions, and confidence values for each character.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li>KrakenInputException if the mapping between segmentation scripts and</li>
+<li>networks is incomplete.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="kraken.rpred.rpred">
+<code class="descclassname">kraken.rpred.</code><code class="descname">rpred</code><span class="sig-paren">(</span><em>network</em>, <em>im</em>, <em>bounds</em>, <em>pad=16</em>, <em>bidi_reordering=True</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.rpred.rpred" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses a RNN to recognize text</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>network</strong> (<em>kraken.lib.models.TorchSeqRecognizer</em>) – A TorchSegRecognizer
+object</li>
+<li><strong>im</strong> (<em>PIL.Image</em>) – Image to extract text from</li>
+<li><strong>bounds</strong> (<em>dict</em>) – A dictionary containing a ‘boxes’ entry with a list of
+coordinates (x0, y0, x1, y1) of a text line in the image
+and an entry ‘text_direction’ containing
+‘horizontal-lr/rl/vertical-lr/rl’.</li>
+<li><strong>pad</strong> (<em>int</em>) – Extra blank padding to the left and right of text line.
+Auto-disabled when expected network inputs are incompatible
+with padding.</li>
+<li><strong>bidi_reordering</strong> (<em>bool</em>) – Reorder classes in the ocr_record according to
+the Unicode bidirectional algorithm for correct
+display.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Yields:</th><td class="field-body"><p class="first last">An ocr_record containing the recognized text, absolute character
+positions, and confidence values for each character.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/kraken.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">kraken API</a><ul>
+<li><a class="reference internal" href="#module-kraken.binarization">kraken.binarization module</a><ul>
+<li><a class="reference internal" href="#kraken-binarization">kraken.binarization</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#kraken-html-module">kraken.html module</a></li>
+<li><a class="reference internal" href="#module-kraken.pageseg">kraken.pageseg module</a><ul>
+<li><a class="reference internal" href="#kraken-pageseg">kraken.pageseg</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-kraken.rpred">kraken.rpred module</a><ul>
+<li><a class="reference internal" href="#kraken-rpred">kraken.rpred</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="advanced.html" title="previous chapter">Advanced usage</a></li>
+      <li>Next: <a href="models.html" title="next chapter">Models</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+<h3>Versions</h3>
+<ul>
+    <li><a href="../master/api.html">master</a></li>
+    <li><a href="../0.10.0/api.html">0.10.0</a></li>
+    <li><a href="api.html">0.4.0</a></li>
+    <li><a href="../0.8.0/api.html">0.8.0</a></li>
+    <li><a href="../0.9.0/api.html">0.9.0</a></li>
+</ul>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, mittagessen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+      |
+      <a href="_sources/api.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
