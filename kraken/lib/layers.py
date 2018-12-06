@@ -7,6 +7,7 @@ import numpy as np
 from typing import List, Tuple, Optional, Iterable
 from torch.nn import Module
 from torch.nn import functional as F
+from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 from coremltools.proto import NeuralNetwork_pb2
 
 # all tensors are ordered NCHW, the "feature" dimension is C, so the output of
@@ -154,7 +155,7 @@ class Reshape(Module):
         self.high = high
         self.low = low
 
-    def forward(self, input: torch.Tensor) -> torch.Tensor:
+    def forward(self, input: torch.Tensor, lens: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
         # split dimension src_dim into part_a x part_b
         input = input.reshape(input.shape[:self.src_dim] + (self.part_a, self.part_b) + input.shape[self.src_dim + 1:])
         dest = self.low
@@ -170,13 +171,13 @@ class Reshape(Module):
             perm[x], perm[x + step] = perm[x + step], perm[x]
         input = input.permute(perm)
         o = input.reshape(input.shape[:dest] + (input.shape[dest] * input.shape[dest + 1],) + input.shape[dest + 2:])
-        return o
+        return o, lens // (input.shape[-1] / o.shape[3])
 
     def get_shape(self, input: Tuple[int, int, int, int]) -> Tuple[int, int, int, int]:
         input_shape = torch.zeros([x if x else 1 for x in input])
         with torch.no_grad():
-            o = self.forward(input_shape)
-        return tuple(o.shape)  # type: ignore
+            o = self.forward(input_shape, torch.tensor(input[0] * [input[3]]))
+        return tuple(o[0].shape)  # type: ignore
 
     def deserialize(self, name, spec):
         """
@@ -214,8 +215,9 @@ class MaxPool(Module):
         self.stride = stride
         self.layer = torch.nn.MaxPool2d(kernel_size, stride)
 
-    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
-        return self.layer(inputs)
+    def forward(self, inputs: torch.Tensor, lens: torch.Tensor) -> torch.Tensor:
+        o = self.layer(inputs)
+        return o, lens // (inputs.shape[3] / o.shape[3])
 
     def get_shape(self, input: Tuple[int, int, int, int]) -> Tuple[int, int, int, int]:
         self.output_shape = (input[0],
@@ -259,8 +261,8 @@ class Dropout(Module):
         elif dim == 2:
             self.layer = torch.nn.Dropout2d(p)
 
-    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
-        return self.layer(inputs)
+    def forward(self, inputs: torch.Tensor, lens: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+        return self.layer(inputs), lens
 
     def get_shape(self, input: Tuple[int, int, int, int]) -> Tuple[int, int, int, int]:
         self.output_shape = input
@@ -303,7 +305,7 @@ class TransposedSummarizingRNN(Module):
         Args:
             input_size:
             hidden_size:
-            direction (str):
+            direction (str): 'b' for bidirectional, 'f' for forward
             transpose (bool): Transpose width/height dimension
             summarize (bool): Only return the last time step.
             legacy (str): Set to `clstm` for clstm rnns and `ocropy` for ocropus models.
@@ -334,29 +336,40 @@ class TransposedSummarizingRNN(Module):
                                        batch_first=True,
                                        bias=False if legacy else True)
 
-    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
+    def forward(self, inputs: torch.Tensor, lens: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+        olens = lens
         # NCHW -> HNWC
         inputs = inputs.permute(2, 0, 3, 1)
+        # repeat lens from N to H*N
+        lens = torch.tensor(np.repeat(lens, inputs.shape[0]))
         if self.transpose:
             # HNWC -> WNHC
             inputs = inputs.transpose(0, 2)
+            #(W*N)[H]
+            lens = torch.tensor((inputs.shape[1] * inputs.shape[0]) * [inputs.shape[2]])
         if self.legacy:
             ones = torch.ones(inputs.shape[:3] + (1,))
             inputs = torch.cat([ones, inputs], dim=3)
         # HNWC -> (H*N)WC
         siz = inputs.size()
         inputs = inputs.contiguous().view(-1, siz[2], siz[3])
+        total_length = inputs.size(1)
+        inputs = pack_padded_sequence(inputs, list(lens), batch_first=True)
         # (H*N)WO
         o, _ = self.layer(inputs)
+        o, l = pad_packed_sequence(o, batch_first=True, total_length=total_length)
         # resize to HNWO
         o = o.view(siz[0], siz[1], siz[2], self.output_size)
         if self.summarize:
             # HN1O
             o = o[:, :, -1, :].unsqueeze(2)
+            # sequence lengths only change when summarizing without transposition
+            if not self.transpose:
+                olens = torch.tensor(siz[1] * [1])
         if self.transpose:
             o = o.transpose(0, 2)
         # HNWO -> NOHW
-        return o.permute(1, 3, 0, 2)
+        return o.permute(1, 3, 0, 2), olens
 
     def get_shape(self, input: Tuple[int, int, int, int]) -> Tuple[int, int, int, int]:
         """
@@ -514,7 +527,7 @@ class LinSoftmax(Module):
 
         self.lin = torch.nn.Linear(self.input_size, output_size)
 
-    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
+    def forward(self, inputs: torch.Tensor, lens: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
         # move features (C) to last dimension for linear activation
         # NCHW -> NWHC
         inputs = inputs.transpose(1, 3)
@@ -528,7 +541,7 @@ class LinSoftmax(Module):
         else:
             o = F.log_softmax(o, dim=3)
         # and swap again
-        return o.transpose(1, 3)
+        return o.transpose(1, 3), lens
 
     def get_shape(self, input: Tuple[int, int, int, int]) -> Tuple[int, int, int, int]:
         """
@@ -619,11 +632,13 @@ class ActConv2D(Module):
         self.co = torch.nn.Conv2d(in_channels, out_channels, kernel_size,
                                   padding=self.padding)
 
-    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
+    def forward(self, inputs: torch.Tensor, lens: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+        print(inputs.shape)
         o = self.co(inputs)
+        print(o.shape)
         if self.nl:
             o = self.nl(o)
-        return o
+        return o, lens // (inputs.shape[3] / o.shape[3])
 
     def get_shape(self, input: Tuple[int, int, int, int]) -> Tuple[int, int, int, int]:
         self.output_shape = (input[0],

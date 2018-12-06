@@ -35,6 +35,19 @@ __all__ = ['TorchVGSLModel']
 logger = logging.getLogger(__name__)
 
 
+class VGSLSequential(nn.Sequential):
+    """
+    Sequential VGSL module allowing chaining of batched lengths.
+    """
+    def __init__(self, *args, **kwargs):
+        super(VGSLSequential, self).__init__(*args, **kwargs)
+
+    def forward(self, input: torch.Tensor, lens: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+        for module in self._modules.values():
+            input, lens = module(input, lens)
+        return input, lens
+
+
 class TorchVGSLModel(object):
     """
     Class building a torch module from a VSGL spec.
@@ -51,7 +64,7 @@ class TorchVGSLModel(object):
 
     Attributes:
         input (tuple): Expected input tensor as a 4-tuple.
-        nn (torch.nn.Sequential): Stack of layers parsed from the spec.
+        nn (kraken.lib.VGSLModule): Stack of layers parsed from the spec.
         criterion (torch.nn.Module): Fully parametrized loss function.
 
     """
@@ -100,7 +113,7 @@ class TorchVGSLModel(object):
         self.ops = [self.build_rnn, self.build_dropout, self.build_maxpool, self.build_conv, self.build_output, self.build_reshape]
         self.codec = None  # type: Optional[PytorchCodec]
         self.criterion = None  # type: Any
-        self.nn = torch.nn.Sequential()
+        self.nn = VGSLSequential()
 
         self.idx = -1
         spec = spec.strip()
