@@ -6,10 +6,10 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>kraken API &#8212; kraken  documentation</title>
+    <title>kraken API &#8212; kraken 1.0.1
+ documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/banner.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
@@ -34,13 +34,7 @@
 
           <div class="body" role="main">
             
-  
-
-
-
-
-
-<div class="section" id="module-kraken">
+  <div class="section" id="module-kraken">
 <span id="kraken-api"></span><h1>kraken API<a class="headerlink" href="#module-kraken" title="Permalink to this headline">¶</a></h1>
 <p>Kraken provides routines which are usable by third party tools. In general
 you can expect function in the <code class="docutils literal notranslate"><span class="pre">kraken</span></code> package to remain stable. We will try
@@ -53,25 +47,8 @@ garantueed.</p>
 <h3>kraken.binarization<a class="headerlink" href="#kraken-binarization" title="Permalink to this headline">¶</a></h3>
 <p>An adaptive binarization algorithm.</p>
 <dl class="function">
-<dt id="kraken.binarization.is_bitonal">
-<code class="descclassname">kraken.binarization.</code><code class="descname">is_bitonal</code><span class="sig-paren">(</span><em>im</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.binarization.is_bitonal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Tests a PIL.Image for bitonality.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>im</strong> (<em>PIL.Image</em>) – Image to test</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if the image contains only two different color values. False
-otherwise.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
 <dt id="kraken.binarization.nlbin">
-<code class="descclassname">kraken.binarization.</code><code class="descname">nlbin</code><span class="sig-paren">(</span><em>im</em>, <em>threshold=0.5</em>, <em>zoom=0.5</em>, <em>escale=1.0</em>, <em>border=0.1</em>, <em>perc=80</em>, <em>range=20</em>, <em>low=5</em>, <em>high=90</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.binarization.nlbin" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">kraken.binarization.</code><code class="descname">nlbin</code><span class="sig-paren">(</span><em>im: &lt;module 'PIL.Image' from '/home/mittagessen/.virtualenvs/kraken3/lib/python3.6/site-packages/PIL/Image.py'&gt;</em>, <em>threshold: float = 0.5</em>, <em>zoom: float = 0.5</em>, <em>escale: float = 1.0</em>, <em>border: float = 0.1</em>, <em>perc: int = 80</em>, <em>range: int = 20</em>, <em>low: int = 5</em>, <em>high: int = 90</em><span class="sig-paren">)</span> &#x2192; &lt;module 'PIL.Image' from '/home/mittagessen/.virtualenvs/kraken3/lib/python3.6/site-packages/PIL/Image.py'&gt;<a class="headerlink" href="#kraken.binarization.nlbin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs binarization using non-linear processing.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -106,7 +83,7 @@ otherwise.</td>
 <span id="kraken-serialization-module"></span><h2>kraken.serialization module<a class="headerlink" href="#module-kraken.serialization" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="kraken.serialization.serialize">
-<code class="descclassname">kraken.serialization.</code><code class="descname">serialize</code><span class="sig-paren">(</span><em>records</em>, <em>image_name=''</em>, <em>image_size=(0</em>, <em>0)</em>, <em>writing_mode='horizontal-tb'</em>, <em>scripts=None</em>, <em>template='hocr'</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.serialization.serialize" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">kraken.serialization.</code><code class="descname">serialize</code><span class="sig-paren">(</span><em>records: Sequence[kraken.rpred.ocr_record], image_name: str = None, image_size: Tuple[int, int] = (0, 0), writing_mode: str = 'horizontal-tb', scripts: Union[typing.Iterable[str], NoneType] = None, template: str = 'hocr'</em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#kraken.serialization.serialize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Serializes a list of ocr_records into an output document.</p>
 <p>Serializes a list of predictions and their corresponding positions by doing
 some hOCR-specific preprocessing and then renders them through one of
@@ -116,7 +93,7 @@ several jinja2 templates.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>records</strong> (<em>iterable</em>) – List of kraken.rpred.ocr_record</li>
 <li><strong>image_name</strong> (<em>str</em>) – Name of the source image</li>
 <li><strong>image_size</strong> (<em>tuple</em>) – Dimensions of the source image</li>
@@ -128,6 +105,9 @@ vertical-lr.</li>
 <li><strong>template</strong> (<em>str</em>) – Selector for the serialization format. May be
 ‘hocr’ or ‘alto’.</li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(str) rendered template.</p>
 </td>
 </tr>
 </tbody>
@@ -142,7 +122,7 @@ vertical-lr.</li>
 <p>Layout analysis and script detection methods.</p>
 <dl class="function">
 <dt id="kraken.pageseg.segment">
-<code class="descclassname">kraken.pageseg.</code><code class="descname">segment</code><span class="sig-paren">(</span><em>im</em>, <em>text_direction='horizontal-lr'</em>, <em>scale=None</em>, <em>maxcolseps=2</em>, <em>black_colseps=False</em>, <em>no_hlines=True</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.pageseg.segment" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">kraken.pageseg.</code><code class="descname">segment</code><span class="sig-paren">(</span><em>im</em>, <em>text_direction='horizontal-lr'</em>, <em>scale=None</em>, <em>maxcolseps=2</em>, <em>black_colseps=False</em>, <em>no_hlines=True</em>, <em>pad=0</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.pageseg.segment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Segments a page into text lines.</p>
 <p>Segments a page into text lines and returns the absolute coordinates of
 each line in reading order.</p>
@@ -159,6 +139,9 @@ each line in reading order.</p>
 <li><strong>black_colseps</strong> (<em>bool</em>) – Whether column separators are assumed to be
 vertical black lines or not</li>
 <li><strong>no_hlines</strong> (<em>bool</em>) – Switch for horizontal line removal</li>
+<li><strong>pad</strong> (<em>int</em><em> or </em><em>tuple</em>) – Padding to add to line bounding boxes. If int the
+same padding is used both left and right. If a
+2-tuple, uses (padding_left, padding_right).</li>
 </ul>
 </td>
 </tr>
@@ -226,14 +209,14 @@ of a single line. Script is a ISO15924 4 character identifier.</p>
 <p>Generators for recognition on lines images.</p>
 <dl class="class">
 <dt id="kraken.rpred.ocr_record">
-<em class="property">class </em><code class="descclassname">kraken.rpred.</code><code class="descname">ocr_record</code><span class="sig-paren">(</span><em>prediction</em>, <em>cuts</em>, <em>confidences</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.rpred.ocr_record" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">kraken.rpred.</code><code class="descname">ocr_record</code><span class="sig-paren">(</span><em>prediction: str, cuts, confidences: List[float]</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.rpred.ocr_record" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A record object containing the recognition result of a single line</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="kraken.rpred.bidi_record">
-<code class="descclassname">kraken.rpred.</code><code class="descname">bidi_record</code><span class="sig-paren">(</span><em>record</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.rpred.bidi_record" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">kraken.rpred.</code><code class="descname">bidi_record</code><span class="sig-paren">(</span><em>record: kraken.rpred.ocr_record</em><span class="sig-paren">)</span> &#x2192; kraken.rpred.ocr_record<a class="headerlink" href="#kraken.rpred.bidi_record" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reorders a record using the Unicode BiDi algorithm.</p>
 <p>Models trained for RTL or mixed scripts still emit classes in LTR order
 requiring reordering for proper display.</p>
@@ -251,7 +234,7 @@ requiring reordering for proper display.</p>
 
 <dl class="function">
 <dt id="kraken.rpred.mm_rpred">
-<code class="descclassname">kraken.rpred.</code><code class="descname">mm_rpred</code><span class="sig-paren">(</span><em>nets</em>, <em>im</em>, <em>bounds</em>, <em>pad=16</em>, <em>bidi_reordering=True</em>, <em>script_ignore=None</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.rpred.mm_rpred" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">kraken.rpred.</code><code class="descname">mm_rpred</code><span class="sig-paren">(</span><em>nets: Dict[str, kraken.lib.models.TorchSeqRecognizer], im: &lt;module 'PIL.Image' from '/home/mittagessen/.virtualenvs/kraken3/lib/python3.6/site-packages/PIL/Image.py'&gt;, bounds: dict, pad: int = 16, bidi_reordering: bool = True, script_ignore: Union[typing.List[str], NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Generator[[kraken.rpred.ocr_record, NoneType], NoneType]<a class="headerlink" href="#kraken.rpred.mm_rpred" title="Permalink to this definition">¶</a></dt>
 <dd><p>Multi-model version of kraken.rpred.rpred.</p>
 <p>Takes a dictionary of ISO15924 script identifiers-&gt;models and an
 script-annotated segmentation to dynamically select appropriate models for
@@ -263,8 +246,8 @@ these lines.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>nets</strong> (<em>dict</em>) – A dict mapping ISO15924 identifiers to TorchSegRecognizer
 objects. Recommended to be an defaultdict.</li>
-<li><strong>im</strong> (<em>PIL.Image</em>) – Image to extract text from
-bounds (dict): A dictionary containing a ‘boxes’ entry
+<li><strong>im</strong> (<em>PIL.Image</em>) – Image to extract text from</li>
+<li><strong>bounds</strong> (<em>dict</em>) – A dictionary containing a ‘boxes’ entry
 with a list of lists of coordinates (script, (x0, y0,
 x1, y1)) of a text line in the image and an entry
 ‘text_direction’ containing
@@ -293,14 +276,14 @@ positions, and confidence values for each character.</p>
 
 <dl class="function">
 <dt id="kraken.rpred.rpred">
-<code class="descclassname">kraken.rpred.</code><code class="descname">rpred</code><span class="sig-paren">(</span><em>network</em>, <em>im</em>, <em>bounds</em>, <em>pad=16</em>, <em>bidi_reordering=True</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.rpred.rpred" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">kraken.rpred.</code><code class="descname">rpred</code><span class="sig-paren">(</span><em>network: kraken.lib.models.TorchSeqRecognizer</em>, <em>im: &lt;module 'PIL.Image' from '/home/mittagessen/.virtualenvs/kraken3/lib/python3.6/site-packages/PIL/Image.py'&gt;</em>, <em>bounds: dict</em>, <em>pad: int = 16</em>, <em>bidi_reordering: bool = True</em><span class="sig-paren">)</span> &#x2192; Generator[[kraken.rpred.ocr_record, NoneType], NoneType]<a class="headerlink" href="#kraken.rpred.rpred" title="Permalink to this definition">¶</a></dt>
 <dd><p>Uses a RNN to recognize text</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>network</strong> (<em>kraken.lib.models.TorchSeqRecognizer</em>) – A TorchSegRecognizer
+<li><strong>network</strong> (<a class="reference internal" href="#kraken.lib.models.TorchSeqRecognizer" title="kraken.lib.models.TorchSeqRecognizer"><em>kraken.lib.models.TorchSeqRecognizer</em></a>) – A TorchSegRecognizer
 object</li>
 <li><strong>im</strong> (<em>PIL.Image</em>) – Image to extract text from</li>
 <li><strong>bounds</strong> (<em>dict</em>) – A dictionary containing a ‘boxes’ entry with a list of
@@ -326,12 +309,9 @@ positions, and confidence values for each character.</p>
 
 </div>
 </div>
-<div class="section" id="kraken-transcribe-module">
-<h2>kraken.transcribe module<a class="headerlink" href="#kraken-transcribe-module" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-kraken.transcribe"></span><p>Utility functions for ground truth transcription.</p>
-</div>
-<div class="section" id="kraken-train-module">
-<h2>kraken.train module<a class="headerlink" href="#kraken-train-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-kraken.transcribe">
+<span id="kraken-transcribe-module"></span><h2>kraken.transcribe module<a class="headerlink" href="#module-kraken.transcribe" title="Permalink to this headline">¶</a></h2>
+<p>Utility functions for ground truth transcription.</p>
 </div>
 <div class="section" id="module-kraken.linegen">
 <span id="kraken-linegen-module"></span><h2>kraken.linegen module<a class="headerlink" href="#module-kraken.linegen" title="Permalink to this headline">¶</a></h2>
@@ -342,8 +322,7 @@ actual drawing code was adapted from the create_image utility from nototools
 available at [0].</p>
 <p>Line degradation uses a local model described in [1].</p>
 <p>[0] <a class="reference external" href="https://github.com/googlei18n/nototools">https://github.com/googlei18n/nototools</a>
-[1] Kanungo, Tapas, et al. “A statistical, nonparametric methodology for document degradation model validation.” IEEE Transactions on Pattern Analysis and Mach
-ine Intelligence 22.11 (2000): 1209-1223.</p>
+[1] Kanungo, Tapas, et al. “A statistical, nonparametric methodology for document degradation model validation.” IEEE Transactions on Pattern Analysis and Machine Intelligence 22.11 (2000): 1209-1223.</p>
 <dl class="class">
 <dt id="kraken.linegen.LineGenerator">
 <em class="property">class </em><code class="descclassname">kraken.linegen.</code><code class="descname">LineGenerator</code><span class="sig-paren">(</span><em>family='Sans'</em>, <em>font_size=32</em>, <em>font_weight=400</em>, <em>language=None</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.linegen.LineGenerator" title="Permalink to this definition">¶</a></dt>
@@ -455,6 +434,662 @@ the degradations argument of ocropus-linegen.</li>
 
 </div>
 </div>
+<div class="section" id="module-kraken.lib.models">
+<span id="kraken-lib-models-module"></span><h2>kraken.lib.models module<a class="headerlink" href="#module-kraken.lib.models" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="kraken-lib-models">
+<h3>kraken.lib.models<a class="headerlink" href="#kraken-lib-models" title="Permalink to this headline">¶</a></h3>
+<p>Wrapper around TorchVGSLModel including a variety of forward pass helpers for
+sequence classification.</p>
+<dl class="class">
+<dt id="kraken.lib.models.TorchSeqRecognizer">
+<em class="property">class </em><code class="descclassname">kraken.lib.models.</code><code class="descname">TorchSeqRecognizer</code><span class="sig-paren">(</span><em>nn</em>, <em>decoder=&lt;function greedy_decoder&gt;</em>, <em>train: bool = False</em>, <em>device: str = 'cpu'</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.lib.models.TorchSeqRecognizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class wrapping a TorchVGSLModel with a more comfortable recognition interface.</p>
+<dl class="method">
+<dt id="kraken.lib.models.TorchSeqRecognizer.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>line: torch.Tensor</em><span class="sig-paren">)</span> &#x2192; &lt;built-in function array&gt;<a class="headerlink" href="#kraken.lib.models.TorchSeqRecognizer.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs a forward pass on a torch tensor of a line with shape (C, H, W)
+and returns a numpy array (W, C).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kraken.lib.models.TorchSeqRecognizer.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>line: torch.Tensor</em><span class="sig-paren">)</span> &#x2192; List[Tuple[str, int, int, float]]<a class="headerlink" href="#kraken.lib.models.TorchSeqRecognizer.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs a forward pass on a torch tensor of a line with shape (C, H, W)
+and returns the decoding as a list of tuples (string, start, end,
+confidence).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kraken.lib.models.TorchSeqRecognizer.predict_labels">
+<code class="descname">predict_labels</code><span class="sig-paren">(</span><em>line: &lt;built-in method tensor of type object at 0x7f1b12abef80&gt;</em><span class="sig-paren">)</span> &#x2192; List[Tuple[int, int, int, float]]<a class="headerlink" href="#kraken.lib.models.TorchSeqRecognizer.predict_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs a forward pass on a torch tensor of a line with shape (C, H, W)
+and returns a list of tuples (class, start, end, max). Max is the
+maximum value of the softmax layer in the region.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kraken.lib.models.TorchSeqRecognizer.predict_string">
+<code class="descname">predict_string</code><span class="sig-paren">(</span><em>line: torch.Tensor</em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#kraken.lib.models.TorchSeqRecognizer.predict_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs a forward pass on a torch tensor of a line with shape (C, H, W)
+and returns a string of the results.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kraken.lib.models.TorchSeqRecognizer.to">
+<code class="descname">to</code><span class="sig-paren">(</span><em>device</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.lib.models.TorchSeqRecognizer.to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Moves model to device and automatically loads input tensors onto it.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="kraken.lib.models.load_any">
+<code class="descclassname">kraken.lib.models.</code><code class="descname">load_any</code><span class="sig-paren">(</span><em>fname: str</em>, <em>train: bool = False</em>, <em>device: str = 'cpu'</em><span class="sig-paren">)</span> &#x2192; kraken.lib.models.TorchSeqRecognizer<a class="headerlink" href="#kraken.lib.models.load_any" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads anything that was, is, and will be a valid ocropus model and
+instantiates a shiny new kraken.lib.lstm.SeqRecognizer from the RNN
+configuration in the file.</p>
+<p>Currently it recognizes the following kinds of models:</p>
+<blockquote>
+<div><ul class="simple">
+<li>pyrnn models containing BIDILSTMs</li>
+<li>protobuf models containing converted python BIDILSTMs</li>
+<li>protobuf models containing CLSTM networks</li>
+</ul>
+</div></blockquote>
+<p>Additionally an attribute ‘kind’ will be added to the SeqRecognizer
+containing a string representation of the source kind. Current known values
+are:</p>
+<blockquote>
+<div><ul class="simple">
+<li>pyrnn for pickled BIDILSTMs</li>
+<li>clstm for protobuf models generated by clstm</li>
+</ul>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fname</strong> (<em>str</em>) – Path to the model</li>
+<li><strong>train</strong> (<em>bool</em>) – Enables gradient calculation and dropout layers in model.</li>
+<li><strong>device</strong> (<em>str</em>) – Target device</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A kraken.lib.models.TorchSeqRecognizer object.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-kraken.lib.vgsl">
+<span id="kraken-lib-vgsl-module"></span><h2>kraken.lib.vgsl module<a class="headerlink" href="#module-kraken.lib.vgsl" title="Permalink to this headline">¶</a></h2>
+<p>VGSL plumbing</p>
+<dl class="class">
+<dt id="kraken.lib.vgsl.TorchVGSLModel">
+<em class="property">class </em><code class="descclassname">kraken.lib.vgsl.</code><code class="descname">TorchVGSLModel</code><span class="sig-paren">(</span><em>spec: str</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.lib.vgsl.TorchVGSLModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class building a torch module from a VSGL spec.</p>
+<p>The initialized class will contain a variable number of layers and a loss
+function. Inputs and outputs are always 4D tensors in order (batch,
+channels, height, width) with channels always being the feature dimension.</p>
+<p>Importantly this means that a recurrent network will be fed the channel
+vector at each step along its time axis, i.e. either put the non-time-axis
+dimension into the channels dimension or use a summarizing RNN squashing
+the time axis to 1 and putting the output into the channels dimension
+respectively.</p>
+<dl class="attribute">
+<dt id="kraken.lib.vgsl.TorchVGSLModel.input">
+<code class="descname">input</code><a class="headerlink" href="#kraken.lib.vgsl.TorchVGSLModel.input" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>tuple</em> – Expected input tensor as a 4-tuple.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kraken.lib.vgsl.TorchVGSLModel.nn">
+<code class="descname">nn</code><a class="headerlink" href="#kraken.lib.vgsl.TorchVGSLModel.nn" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>torch.nn.Sequential</em> – Stack of layers parsed from the spec.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kraken.lib.vgsl.TorchVGSLModel.criterion">
+<code class="descname">criterion</code><a class="headerlink" href="#kraken.lib.vgsl.TorchVGSLModel.criterion" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>torch.nn.Module</em> – Fully parametrized loss function.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kraken.lib.vgsl.TorchVGSLModel.add_codec">
+<code class="descname">add_codec</code><span class="sig-paren">(</span><em>codec: kraken.lib.codec.PytorchCodec</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#kraken.lib.vgsl.TorchVGSLModel.add_codec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a PytorchCodec to the model.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kraken.lib.vgsl.TorchVGSLModel.append">
+<code class="descname">append</code><span class="sig-paren">(</span><em>idx: int</em>, <em>spec: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#kraken.lib.vgsl.TorchVGSLModel.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Splits a model at layer <cite>idx</cite> and append layers <cite>spec</cite>.</p>
+<p>New layers are initialized using the init_weights method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>idx</strong> (<em>int</em>) – Index of layer to append spec to starting with 1.  To
+select the whole layer stack set idx to None.</li>
+<li><strong>spec</strong> (<em>str</em>) – VGSL spec without input block to append to model.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kraken.lib.vgsl.TorchVGSLModel.build_conv">
+<code class="descname">build_conv</code><span class="sig-paren">(</span><em>input: Tuple[int, int, int, int], block: str</em><span class="sig-paren">)</span> &#x2192; Union[typing.Tuple[NoneType, NoneType, NoneType], typing.Tuple[typing.Tuple[int, int, int, int], str, typing.Callable]]<a class="headerlink" href="#kraken.lib.vgsl.TorchVGSLModel.build_conv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds a 2D convolution layer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kraken.lib.vgsl.TorchVGSLModel.build_maxpool">
+<code class="descname">build_maxpool</code><span class="sig-paren">(</span><em>input: Tuple[int, int, int, int], block: str</em><span class="sig-paren">)</span> &#x2192; Union[typing.Tuple[NoneType, NoneType, NoneType], typing.Tuple[typing.Tuple[int, int, int, int], str, typing.Callable]]<a class="headerlink" href="#kraken.lib.vgsl.TorchVGSLModel.build_maxpool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds a maxpool layer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kraken.lib.vgsl.TorchVGSLModel.build_output">
+<code class="descname">build_output</code><span class="sig-paren">(</span><em>input: Tuple[int, int, int, int], block: str</em><span class="sig-paren">)</span> &#x2192; Union[typing.Tuple[NoneType, NoneType, NoneType], typing.Tuple[typing.Tuple[int, int, int, int], str, typing.Callable]]<a class="headerlink" href="#kraken.lib.vgsl.TorchVGSLModel.build_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds an output layer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kraken.lib.vgsl.TorchVGSLModel.build_reshape">
+<code class="descname">build_reshape</code><span class="sig-paren">(</span><em>input: Tuple[int, int, int, int], block: str</em><span class="sig-paren">)</span> &#x2192; Union[typing.Tuple[NoneType, NoneType, NoneType], typing.Tuple[typing.Tuple[int, int, int, int], str, typing.Callable]]<a class="headerlink" href="#kraken.lib.vgsl.TorchVGSLModel.build_reshape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds a reshape layer</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kraken.lib.vgsl.TorchVGSLModel.build_rnn">
+<code class="descname">build_rnn</code><span class="sig-paren">(</span><em>input: Tuple[int, int, int, int], block: str</em><span class="sig-paren">)</span> &#x2192; Union[typing.Tuple[NoneType, NoneType, NoneType], typing.Tuple[typing.Tuple[int, int, int, int], str, typing.Callable]]<a class="headerlink" href="#kraken.lib.vgsl.TorchVGSLModel.build_rnn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds an LSTM/GRU layer returning number of outputs and layer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kraken.lib.vgsl.TorchVGSLModel.eval">
+<code class="descname">eval</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#kraken.lib.vgsl.TorchVGSLModel.eval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the model to evaluation/inference mode, disabling dropout and
+gradient calculation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kraken.lib.vgsl.TorchVGSLModel.get_layer_name">
+<code class="descname">get_layer_name</code><span class="sig-paren">(</span><em>layer: str</em>, <em>name: Union[str</em>, <em>NoneType] = None</em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#kraken.lib.vgsl.TorchVGSLModel.get_layer_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a unique identifier for the layer optionally using a supplied
+name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>layer</strong> (<em>str</em>) – Identifier of the layer type</li>
+<li><strong>name</strong> (<em>str</em>) – user-supplied {name} with {} that need removing.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(str) network unique layer name</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kraken.lib.vgsl.TorchVGSLModel.init_weights">
+<code class="descname">init_weights</code><span class="sig-paren">(</span><em>idx: slice = slice(0</em>, <em>None</em>, <em>None)</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#kraken.lib.vgsl.TorchVGSLModel.init_weights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes weights for all or a subset of layers in the graph.</p>
+<p>LSTM/GRU layers are orthogonally initialized, convolutional layers
+uniformly from (-0.1,0.1).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>idx</strong> (<em>slice</em>) – A slice object representing the indices of layers to
+initialize.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="kraken.lib.vgsl.TorchVGSLModel.load_clstm_model">
+<em class="property">classmethod </em><code class="descname">load_clstm_model</code><span class="sig-paren">(</span><em>path: str</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.lib.vgsl.TorchVGSLModel.load_clstm_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads an CLSTM model to VGSL.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="kraken.lib.vgsl.TorchVGSLModel.load_model">
+<em class="property">classmethod </em><code class="descname">load_model</code><span class="sig-paren">(</span><em>path: str</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.lib.vgsl.TorchVGSLModel.load_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deserializes a VGSL model from a CoreML file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<em>str</em>) – CoreML file</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="kraken.lib.vgsl.TorchVGSLModel.load_pronn_model">
+<em class="property">classmethod </em><code class="descname">load_pronn_model</code><span class="sig-paren">(</span><em>path: str</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.lib.vgsl.TorchVGSLModel.load_pronn_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads an pronn model to VGSL.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="kraken.lib.vgsl.TorchVGSLModel.load_pyrnn_model">
+<em class="property">classmethod </em><code class="descname">load_pyrnn_model</code><span class="sig-paren">(</span><em>path: str</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.lib.vgsl.TorchVGSLModel.load_pyrnn_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads an pyrnn model to VGSL.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kraken.lib.vgsl.TorchVGSLModel.resize_output">
+<code class="descname">resize_output</code><span class="sig-paren">(</span><em>output_size: int</em>, <em>del_indices: Union[typing.Iterable</em>, <em>NoneType] = None</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#kraken.lib.vgsl.TorchVGSLModel.resize_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resizes an output linear projection layer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>output_size</strong> (<em>int</em>) – New size of the linear layer</li>
+<li><strong>del_indices</strong> (<em>list</em>) – list of outputs to delete from layer</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kraken.lib.vgsl.TorchVGSLModel.save_model">
+<code class="descname">save_model</code><span class="sig-paren">(</span><em>path: str</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.lib.vgsl.TorchVGSLModel.save_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serializes the model into path.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<em>str</em>) – Target destination</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="kraken.lib.vgsl.TorchVGSLModel.set_layer_name">
+<em class="property">static </em><code class="descname">set_layer_name</code><span class="sig-paren">(</span><em>layer: str</em>, <em>name: str</em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#kraken.lib.vgsl.TorchVGSLModel.set_layer_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the name field of an VGSL layer definition.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>layer</strong> (<em>str</em>) – VGSL definition</li>
+<li><strong>name</strong> (<em>str</em>) – Layer name</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kraken.lib.vgsl.TorchVGSLModel.set_num_threads">
+<code class="descname">set_num_threads</code><span class="sig-paren">(</span><em>num: int</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#kraken.lib.vgsl.TorchVGSLModel.set_num_threads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets number of OpenMP threads to use.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kraken.lib.vgsl.TorchVGSLModel.train">
+<code class="descname">train</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#kraken.lib.vgsl.TorchVGSLModel.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the model to training mode (enables dropout layers and disables
+softmax on CTC layers).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-kraken.lib.codec">
+<span id="kraken-lib-codec"></span><h2>kraken.lib.codec<a class="headerlink" href="#module-kraken.lib.codec" title="Permalink to this headline">¶</a></h2>
+<p>pytorch compatible codec with many-to-many mapping between labels and
+graphemes.</p>
+<dl class="class">
+<dt id="kraken.lib.codec.PytorchCodec">
+<em class="property">class </em><code class="descclassname">kraken.lib.codec.</code><code class="descname">PytorchCodec</code><span class="sig-paren">(</span><em>charset: Union[typing.Dict[str, typing.Sequence[int]], typing.Sequence[str], str]</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.lib.codec.PytorchCodec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Translates between labels and graphemes.</p>
+<dl class="method">
+<dt id="kraken.lib.codec.PytorchCodec.decode">
+<code class="descname">decode</code><span class="sig-paren">(</span><em>labels: Sequence[Tuple[int, int, int, float]]</em><span class="sig-paren">)</span> &#x2192; List[Tuple[str, int, int, float]]<a class="headerlink" href="#kraken.lib.codec.PytorchCodec.decode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decodes a labelling.</p>
+<p>Given a labelling with cuts and  confidences returns a string with the
+cuts and confidences aggregated across label-code point
+correspondences. When decoding multilabels to code points the resulting
+cuts are min/max, confidences are averaged.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>labels</strong> (<em>list</em>) – Input containing tuples (label, start, end,
+confidence).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of tuples (code point, start, end, confidence)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kraken.lib.codec.PytorchCodec.encode">
+<code class="descname">encode</code><span class="sig-paren">(</span><em>s: str</em><span class="sig-paren">)</span> &#x2192; torch.IntTensor<a class="headerlink" href="#kraken.lib.codec.PytorchCodec.encode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encodes a string into a sequence of labels.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>s</strong> (<em>str</em>) – Input unicode string</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(torch.IntTensor) encoded label sequence</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body">KrakenEncodeException if encoding fails.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kraken.lib.codec.PytorchCodec.max_label">
+<code class="descname">max_label</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#kraken.lib.codec.PytorchCodec.max_label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum label value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kraken.lib.codec.PytorchCodec.merge">
+<code class="descname">merge</code><span class="sig-paren">(</span><em>codec: kraken.lib.codec.PytorchCodec</em><span class="sig-paren">)</span> &#x2192; Tuple[_ForwardRef('PytorchCodec'), Set]<a class="headerlink" href="#kraken.lib.codec.PytorchCodec.merge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transforms this codec (c1) into another (c2) reusing as many labels as
+possible.</p>
+<p>The resulting codec is able to encode the same code point sequences
+while not necessarily having the same labels for them as c2.
+Retains matching character -&gt; label mappings from both codecs, removes
+mappings not c2, and adds mappings not in c1. Compound labels in c2 for
+code point sequences not in c1 containing labels also in use in c1 are
+added as separate labels.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>codec</strong> (<a class="reference internal" href="#kraken.lib.codec.PytorchCodec" title="kraken.lib.codec.PytorchCodec"><em>kraken.lib.codec.PytorchCodec</em></a>) – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A merged codec and a list of labels that were removed from the
+original codec.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-kraken.lib.train">
+<span id="kraken-lib-train-module"></span><h2>kraken.lib.train module<a class="headerlink" href="#module-kraken.lib.train" title="Permalink to this headline">¶</a></h2>
+<p>Training loop interception helpers</p>
+<dl class="class">
+<dt id="kraken.lib.train.EarlyStopping">
+<em class="property">class </em><code class="descclassname">kraken.lib.train.</code><code class="descname">EarlyStopping</code><span class="sig-paren">(</span><em>it: torch.utils.data.dataloader.DataLoader</em>, <em>min_delta: float = None</em>, <em>lag: int = 1000</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.lib.train.EarlyStopping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">kraken.lib.train.TrainStopper</span></code></p>
+<p>Early stopping to terminate training when validation loss doesn’t improve
+over a certain time.</p>
+<dl class="method">
+<dt id="kraken.lib.train.EarlyStopping.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>val_loss: float</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#kraken.lib.train.EarlyStopping.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the internal validation loss state</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="kraken.lib.train.EpochStopping">
+<em class="property">class </em><code class="descclassname">kraken.lib.train.</code><code class="descname">EpochStopping</code><span class="sig-paren">(</span><em>it: torch.utils.data.dataloader.DataLoader</em>, <em>iterations: int</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.lib.train.EpochStopping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">kraken.lib.train.TrainStopper</span></code></p>
+<p>Dumb stopping after a fixed number of iterations.</p>
+<dl class="method">
+<dt id="kraken.lib.train.EpochStopping.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>val_loss: float</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#kraken.lib.train.EpochStopping.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Only update internal best iteration</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="kraken.lib.train.TrainScheduler">
+<em class="property">class </em><code class="descclassname">kraken.lib.train.</code><code class="descname">TrainScheduler</code><span class="sig-paren">(</span><em>optimizer: torch.optim.optimizer.Optimizer</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.lib.train.TrainScheduler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Implements learning rate scheduling.</p>
+<dl class="method">
+<dt id="kraken.lib.train.TrainScheduler.add_phase">
+<code class="descname">add_phase</code><span class="sig-paren">(</span><em>iterations: int, lrate: Tuple[float, float] = (0.0001, 0.0001), momentum: Tuple[float, float] = (0.9, 0.9), wd: float = 0.0, annealing_fn: Callable[[float, float, float], float] = &lt;function annealing_const&gt;</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#kraken.lib.train.TrainScheduler.add_phase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a new phase to the scheduler.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sched</strong> (<em>kraken.lib.train.Trainscheduler</em>) – TrainScheduler instance</li>
+<li><strong>iterations</strong> (<em>int</em>) – Number of iterations per cycle</li>
+<li><strong>max_lr</strong> (<em>float</em>) – Peak learning rate</li>
+<li><strong>div</strong> (<em>float</em>) – divisor to determine minimum learning rate (min_lr = max_lr / div)</li>
+<li><strong>max_mon</strong> (<em>float</em>) – Maximum momentum</li>
+<li><strong>min_mon</strong> (<em>float</em>) – Minimum momentum</li>
+<li><strong>wd</strong> (<em>float</em>) – Weight decay</li>
+<li><strong>annealing_fn</strong> (<em>Callable</em><em>[</em><em>[</em><em>int</em><em>, </em><em>int</em><em>, </em><em>int</em><em>]</em><em>, </em><em>float</em><em>]</em>) – LR change</li>
+<li><strong>Can be one of annealing_const</strong> (<em>function.</em>) – </li>
+<li><strong>annealing_linear</strong> (<em>linear change</em>) – change).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kraken.lib.train.TrainScheduler.step">
+<code class="descname">step</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#kraken.lib.train.TrainScheduler.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs an optimization step.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="kraken.lib.train.add_1cycle">
+<code class="descclassname">kraken.lib.train.</code><code class="descname">add_1cycle</code><span class="sig-paren">(</span><em>sched: kraken.lib.train.TrainScheduler</em>, <em>iterations: int</em>, <em>max_lr: float = 0.0001</em>, <em>div: float = 25.0</em>, <em>max_mom: float = 0.95</em>, <em>min_mom: float = 0.85</em>, <em>wd: float = 0.0</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.lib.train.add_1cycle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds 1cycle policy [0] phases to a learning rate scheduler.</p>
+<p>[0] Smith, Leslie N. “A disciplined approach to neural network hyper-parameters: Part 1–learning rate, batch size, momentum, and weight decay.” arXiv preprint arXiv:1803.09820 (2018).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sched</strong> (<em>kraken.lib.train.Trainscheduler</em>) – TrainScheduler instance</li>
+<li><strong>iterations</strong> (<em>int</em>) – Number of iterations per cycle</li>
+<li><strong>max_lr</strong> (<em>float</em>) – Peak learning rate</li>
+<li><strong>div</strong> (<em>float</em>) – divisor to determine minimum learning rate (min_lr = max_lr / div)</li>
+<li><strong>max_mon</strong> (<em>float</em>) – Maximum momentum</li>
+<li><strong>min_mon</strong> (<em>float</em>) – Minimum momentum</li>
+<li><strong>wd</strong> (<em>float</em>) – Weight decay</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-kraken.lib.dataset">
+<span id="kraken-lib-dataset-module"></span><h2>kraken.lib.dataset module<a class="headerlink" href="#module-kraken.lib.dataset" title="Permalink to this headline">¶</a></h2>
+<p>Utility functions for data loading and training of VGSL networks.</p>
+<dl class="class">
+<dt id="kraken.lib.dataset.GroundTruthDataset">
+<em class="property">class </em><code class="descclassname">kraken.lib.dataset.</code><code class="descname">GroundTruthDataset</code><span class="sig-paren">(</span><em>split: Callable[str</em>, <em>str] = &lt;function GroundTruthDataset.&lt;lambda&gt;&gt;</em>, <em>suffix: str = '.gt.txt'</em>, <em>normalization: Union[str</em>, <em>NoneType] = None</em>, <em>reorder: bool = True</em>, <em>im_transforms: Callable[Any</em>, <em>torch.Tensor] = Compose( )</em>, <em>preload: bool = True</em><span class="sig-paren">)</span><a class="headerlink" href="#kraken.lib.dataset.GroundTruthDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code></p>
+<p>Dataset for ground truth used during training.</p>
+<p>All data is cached in memory.</p>
+<dl class="method">
+<dt id="kraken.lib.dataset.GroundTruthDataset.add">
+<code class="descname">add</code><span class="sig-paren">(</span><em>image: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#kraken.lib.dataset.GroundTruthDataset.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a line-image-text pair to the dataset.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>image</strong> (<em>str</em>) – Input image path</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kraken.lib.dataset.GroundTruthDataset.encode">
+<code class="descname">encode</code><span class="sig-paren">(</span><em>codec: Union[kraken.lib.codec.PytorchCodec</em>, <em>NoneType] = None</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#kraken.lib.dataset.GroundTruthDataset.encode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a codec to the dataset and encodes all text lines.</p>
+<p>Has to be run before sampling from the dataset.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="kraken.lib.dataset.compute_error">
+<code class="descclassname">kraken.lib.dataset.</code><code class="descname">compute_error</code><span class="sig-paren">(</span><em>model: kraken.lib.models.TorchSeqRecognizer, validation_set: Sequence[Tuple[str, str]]</em><span class="sig-paren">)</span> &#x2192; Tuple[int, int]<a class="headerlink" href="#kraken.lib.dataset.compute_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes error report from a model and a list of line image-text pairs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>model</strong> (<a class="reference internal" href="#kraken.lib.models.TorchSeqRecognizer" title="kraken.lib.models.TorchSeqRecognizer"><em>kraken.lib.models.TorchSeqRecognizer</em></a>) – Model used for recognition</li>
+<li><strong>validation_set</strong> (<em>list</em>) – List of tuples (image, text) for validation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A tuple with total number of characters and edit distance across the
+whole validation set.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="kraken.lib.dataset.generate_input_transforms">
+<code class="descclassname">kraken.lib.dataset.</code><code class="descname">generate_input_transforms</code><span class="sig-paren">(</span><em>batch: int</em>, <em>height: int</em>, <em>width: int</em>, <em>channels: int</em>, <em>pad: int</em><span class="sig-paren">)</span> &#x2192; torchvision.transforms.transforms.Compose<a class="headerlink" href="#kraken.lib.dataset.generate_input_transforms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a torchvision transformation converting a PIL.Image into a
+tensor usable in a network forward pass.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>batch</strong> (<em>int</em>) – mini-batch size</li>
+<li><strong>height</strong> (<em>int</em>) – height of input image in pixels</li>
+<li><strong>width</strong> (<em>int</em>) – width of input image in pixels</li>
+<li><strong>channels</strong> (<em>int</em>) – color channels of input</li>
+<li><strong>pad</strong> (<em>int</em>) – Amount of padding on horizontal ends of image</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A torchvision transformation composition converting the input image to
+the appropriate tensor.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-kraken.lib.ctc_decoder">
+<span id="kraken-lib-ctc-decoder"></span><h2>kraken.lib.ctc_decoder<a class="headerlink" href="#module-kraken.lib.ctc_decoder" title="Permalink to this headline">¶</a></h2>
+<p>Decoders for softmax outputs of CTC trained networks.</p>
+<dl class="function">
+<dt id="kraken.lib.ctc_decoder.beam_decoder">
+<code class="descclassname">kraken.lib.ctc_decoder.</code><code class="descname">beam_decoder</code><span class="sig-paren">(</span><em>outputs: numpy.ndarray</em>, <em>beam_size: int = 3</em><span class="sig-paren">)</span> &#x2192; List[Tuple[int, int, int, float]]<a class="headerlink" href="#kraken.lib.ctc_decoder.beam_decoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translates back the network output to a label sequence using
+same-prefix-merge beam search decoding as described in [0].</p>
+<p>[0] Hannun, Awni Y., et al. “First-pass large vocabulary continuous speech
+recognition using bi-directional recurrent DNNs.” arXiv preprint
+arXiv:1408.2873 (2014).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>output</strong> (<em>numpy.array</em>) – (C, W) shaped softmax output tensor</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list with tuples (class, start, end, prob). max is the maximum value
+of the softmax layer in the region.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="kraken.lib.ctc_decoder.greedy_decoder">
+<code class="descclassname">kraken.lib.ctc_decoder.</code><code class="descname">greedy_decoder</code><span class="sig-paren">(</span><em>outputs: numpy.ndarray</em><span class="sig-paren">)</span> &#x2192; List[Tuple[int, int, int, float]]<a class="headerlink" href="#kraken.lib.ctc_decoder.greedy_decoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translates back the network output to a label sequence using greedy/best
+path decoding as described in [0].</p>
+<p>[0] Graves, Alex, et al. “Connectionist temporal classification: labelling
+unsegmented sequence data with recurrent neural networks.” Proceedings of
+the 23rd international conference on Machine learning. ACM, 2006.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>output</strong> (<em>numpy.array</em>) – (C, W) shaped softmax output tensor</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list with tuples (class, start, end, max). max is the maximum value
+of the softmax layer in the region.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="kraken.lib.ctc_decoder.blank_threshold_decoder">
+<code class="descclassname">kraken.lib.ctc_decoder.</code><code class="descname">blank_threshold_decoder</code><span class="sig-paren">(</span><em>outputs: numpy.ndarray</em>, <em>threshold: float = 0.5</em><span class="sig-paren">)</span> &#x2192; List[Tuple[int, int, int, float]]<a class="headerlink" href="#kraken.lib.ctc_decoder.blank_threshold_decoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translates back the network output to a label sequence as the original
+ocropy/clstm.</p>
+<p>Thresholds on class 0, then assigns the maximum (non-zero) class to each
+region.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>output</strong> (<em>numpy.array</em>) – (C, W) shaped softmax output tensor</li>
+<li><strong>threshold</strong> (<em>float</em>) – Threshold for 0 class when determining possible
+label locations.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A list with tuples (class, start, end, max). max is the maximum value
+of the softmax layer in the region.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -483,12 +1118,20 @@ the degradations argument of ocropus-linegen.</li>
 <li><a class="reference internal" href="#kraken-rpred">kraken.rpred</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#kraken-transcribe-module">kraken.transcribe module</a></li>
-<li><a class="reference internal" href="#kraken-train-module">kraken.train module</a></li>
+<li><a class="reference internal" href="#module-kraken.transcribe">kraken.transcribe module</a></li>
 <li><a class="reference internal" href="#module-kraken.linegen">kraken.linegen module</a><ul>
 <li><a class="reference internal" href="#linegen">linegen</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#module-kraken.lib.models">kraken.lib.models module</a><ul>
+<li><a class="reference internal" href="#kraken-lib-models">kraken.lib.models</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-kraken.lib.vgsl">kraken.lib.vgsl module</a></li>
+<li><a class="reference internal" href="#module-kraken.lib.codec">kraken.lib.codec</a></li>
+<li><a class="reference internal" href="#module-kraken.lib.train">kraken.lib.train module</a></li>
+<li><a class="reference internal" href="#module-kraken.lib.dataset">kraken.lib.dataset module</a></li>
+<li><a class="reference internal" href="#module-kraken.lib.ctc_decoder">kraken.lib.ctc_decoder</a></li>
 </ul>
 </li>
 </ul>
@@ -513,14 +1156,6 @@ the degradations argument of ocropus-linegen.</li>
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
-<h3>Versions</h3>
-<ul>
-    <li><a href="master/api.html">master</a></li>
-    <li><a href="0.10.0/api.html">0.10.0</a></li>
-    <li><a href="0.4.0/api.html">0.4.0</a></li>
-    <li><a href="0.8.0/api.html">0.8.0</a></li>
-    <li><a href="0.9.0/api.html">0.9.0</a></li>
-</ul>
         </div>
       </div>
       <div class="clearer"></div>
