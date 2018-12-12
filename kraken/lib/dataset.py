@@ -29,6 +29,7 @@ from typing import Dict, List, Tuple, Sequence, Callable, Optional, Any, Union, 
 from collections import Counter
 from torchvision import transforms
 from torch.utils.data import Dataset
+from torch.nn.utils.rnn import pad_sequence
 
 from kraken.lib.codec import PytorchCodec
 from kraken.lib.models import TorchSeqRecognizer
@@ -231,6 +232,25 @@ def compute_error(model: TorchSeqRecognizer, validation_set: Sequence[Tuple[str,
         error += _fast_levenshtein(pred, text)
     return total_chars, error
 
+
+def line_collate(batch: Sequence[Tuple[torch.Tensor, torch.Tensor]]) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    """
+    Sorts line images by length, pads them to the largest image size and
+    assembles a tensor.
+
+    Args:
+        batch (sequence): List of tuples a input-output tensor pairs.
+
+    Returns:
+        A 4-tuple input batch, concatenated targets, input sequence lengths,
+        and target sequence lengths.
+    """
+    batch = sorted(batch, key=lambda x: x[0].shape[2], reverse=True)
+    seq_len = torch.IntTensor([l[0].shape[2] for l in batch])
+    inp = pad_sequence([x[0].transpose(0, 2) for x in batch]).permute(1, 3, 2, 0).contiguous()
+    target = torch.cat([x[1] for x in batch])
+    target_len = torch.IntTensor([l[1].shape[0] for l in batch])
+    return inp, target, seq_len, target_len
 
 class GroundTruthDataset(Dataset):
     """

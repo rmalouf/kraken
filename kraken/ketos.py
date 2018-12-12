@@ -75,6 +75,7 @@ def _expand_gt(ctx, param, value):
 @click.option('-s', '--spec', show_default=True,
               default='[1,48,0,1 Cr3,3,32 Do0.1,2 Mp2,2 Cr3,3,64 Do0.1,2 Mp2,2 S1(1x12)1,3 Lbx100 Do]',
               help='VGSL spec of the network to train. CTC layer will be added automatically.')
+@click.option('-b', '--batch-size', show_default=True, default=1, type=click.INT, help='batch size for training')
 @click.option('-a', '--append', show_default=True, default=None, type=click.INT,
               help='Removes layers before argument and then appends spec. Only works when loading an existing model')
 @click.option('-i', '--load', show_default=True, type=click.Path(exists=True, readable=True), help='Load existing file to continue training')
@@ -112,10 +113,11 @@ def _expand_gt(ctx, param, value):
 @click.option('--preload/--no-preload', show_default=True, default=None, help='Hard enable/disable for training data preloading')
 @click.option('--threads', show_default=True, default=1, help='Number of OpenMP threads and workers when running on CPU.')
 @click.argument('ground_truth', nargs=-1, callback=_expand_gt, type=click.Path(exists=False, dir_okay=False))
-def train(ctx, pad, output, spec, append, load, savefreq, report, quit, epochs,
-          lag, min_delta, device, optimizer, lrate, momentum, weight_decay,
-          schedule, partition, normalization, codec, resize, reorder,
-          training_files, evaluation_files, preload, threads, ground_truth):
+def train(ctx, pad, output, spec, batch_size, append, load, savefreq, report,
+          quit, epochs, lag, min_delta, device, optimizer, lrate, momentum,
+          weight_decay, schedule, partition, normalization, codec, resize,
+          reorder, training_files, evaluation_files, preload, threads,
+          ground_truth):
     """
     Trains a model from image-text pairs.
     """
@@ -137,7 +139,7 @@ def train(ctx, pad, output, spec, append, load, savefreq, report, quit, epochs,
     from kraken.lib.util import make_printable
     from kraken.lib.train import EarlyStopping, EpochStopping, TrainStopper, TrainScheduler, add_1cycle
     from kraken.lib.codec import PytorchCodec
-    from kraken.lib.dataset import GroundTruthDataset, compute_error, generate_input_transforms
+    from kraken.lib.dataset import GroundTruthDataset, compute_error, generate_input_transforms, line_collate
     from kraken.lib.exceptions import KrakenStopTrainingException
 
     logger.info('Building ground truth set from {} line images'.format(len(ground_truth) + len(training_files)))
@@ -149,7 +151,7 @@ def train(ctx, pad, output, spec, append, load, savefreq, report, quit, epochs,
         logger.info('Loading existing model from {} '.format(load))
         message('Loading model {}'.format(load), nl=False)
         nn = vgsl.TorchVGSLModel.load_model(load)
-        message('\u2713', fg='green', nl=False)
+        message('\u2713', fg='green')
 
     # preparse input sizes from vgsl string to seed ground truth data set
     # sizes and dimension ordering.
@@ -298,7 +300,7 @@ def train(ctx, pad, output, spec, append, load, savefreq, report, quit, epochs,
         loader_threads = threads // 2
     else:
         loader_threads = threads
-    train_loader = DataLoader(gt_set, batch_size=1, shuffle=True, num_workers=loader_threads, pin_memory=True)
+    train_loader = DataLoader(gt_set, batch_size=batch_size, shuffle=True, num_workers=loader_threads, pin_memory=True, collate_fn=line_collate)
     threads -= loader_threads
 
     # don't encode validation set as the alphabets may not match causing encoding failures
@@ -317,9 +319,9 @@ def train(ctx, pad, output, spec, append, load, savefreq, report, quit, epochs,
     rec = models.TorchSeqRecognizer(nn, train=True, device=device)
     optim = getattr(torch.optim, optimizer)(nn.nn.parameters(), lr=0)
 
-    iterations = int(len(gt_set) * epochs)
-    save_it = int(len(gt_set) * savefreq)
-    eval_it = int(len(gt_set) * report)
+    iterations = int(len(gt_set) * epochs / batch_size)
+    save_it = int(len(gt_set) * savefreq / batch_size)
+    eval_it = int(len(gt_set) * report / batch_size)
     lag_it = int(eval_it * lag)
     # calculate how many training stages (epochs / eval frequency)
     stages = int((epochs / report) + 0.5)
@@ -343,12 +345,14 @@ def train(ctx, pad, output, spec, append, load, savefreq, report, quit, epochs,
     for stage in stage_it:
         with log.progressbar(label='stage {}/{}'.format(stage, stages if epochs > 0 else '∞'), length=eval_it, show_pos=True) as bar:
             try:
-                for _, (input, target) in zip(range(eval_it), st_it):
+                for _, (input, target, lens, target_lens) in zip(range(eval_it), st_it):
                     tr_it.step()
                     input = input.to(device, non_blocking=True)
                     target = target.to(device, non_blocking=True)
+                    lens = lens.to(device, non_blocking=True)
+                    target_lens = target_lens.to(device, non_blocking=True)
                     input = input.requires_grad_()
-                    o = nn.nn(input)
+                    o, olens = nn.nn(input, lens)
                     # height should be 1 by now
                     if o.size(2) != 1:
                         raise KrakenInputException('Expected dimension 3 to be 1, actual {}'.format(o.size(2)))
@@ -357,8 +361,8 @@ def train(ctx, pad, output, spec, append, load, savefreq, report, quit, epochs,
                     # NCW -> WNC
                     loss = nn.criterion(o.permute(2, 0, 1),  # type: ignore
                                         target,
-                                        (o.size(2),),
-                                        (target.size(1),))
+                                        olens,
+                                        target_lens)
                     if not torch.isinf(loss):
                         loss.backward()
                         optim.step()

@@ -341,7 +341,7 @@ class TransposedSummarizingRNN(Module):
         # NCHW -> HNWC
         inputs = inputs.permute(2, 0, 3, 1)
         # repeat lens from N to H*N
-        lens = torch.tensor(np.repeat(lens, inputs.shape[0]))
+        lens = np.repeat(lens, inputs.shape[0]).clone().detach()
         if self.transpose:
             # HNWC -> WNHC
             inputs = inputs.transpose(0, 2)
@@ -633,9 +633,7 @@ class ActConv2D(Module):
                                   padding=self.padding)
 
     def forward(self, inputs: torch.Tensor, lens: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
-        print(inputs.shape)
         o = self.co(inputs)
-        print(o.shape)
         if self.nl:
             o = self.nl(o)
         return o, lens // (inputs.shape[3] / o.shape[3])
