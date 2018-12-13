@@ -341,7 +341,7 @@ class TransposedSummarizingRNN(Module):
         # NCHW -> HNWC
         inputs = inputs.permute(2, 0, 3, 1)
         # repeat lens from N to H*N
-        lens = np.repeat(lens, inputs.shape[0]).clone().detach()
+        lens = np.repeat(lens, inputs.shape[0]).clone().detach().to(inputs.device)
         if self.transpose:
             # HNWC -> WNHC
             inputs = inputs.transpose(0, 2)
