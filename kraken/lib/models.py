@@ -66,7 +66,7 @@ class TorchSeqRecognizer(object):
         # make CHW -> 1CHW
         line = line.to(self.device)
         line = line.unsqueeze(0)
-        o = self.nn.nn(line)
+        o, _ = self.nn.nn(line, torch.tensor([line.shape[3]]))
         if o.size(2) != 1:
             raise KrakenInputException('Expected dimension 3 to be 1, actual {}'.format(o.size()))
         self.outputs = o.detach().squeeze().cpu().numpy()
@@ -78,19 +78,16 @@ class TorchSeqRecognizer(object):
         and returns the decoding as a list of tuples (string, start, end,
         confidence).
         """
-        o = self.forward(line)
-        locs = self.decoder(o)
-        return self.codec.decode(locs)
+        o = self.predict_labels(line)
+        return self.codec.decode(o)
 
     def predict_string(self, line: torch.Tensor) -> str:
         """
         Performs a forward pass on a torch tensor of a line with shape (C, H, W)
         and returns a string of the results.
         """
-        o = self.forward(line)
-        locs = self.decoder(o)
-        decoding = self.codec.decode(locs)
-        return ''.join(x[0] for x in decoding)
+        o = self.predict(line)
+        return ''.join(x[0] for x in o)
 
     def predict_labels(self, line: torch.tensor) -> List[Tuple[int, int, int, float]]:
         """

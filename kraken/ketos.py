@@ -363,8 +363,8 @@ def train(ctx, pad, output, spec, batch_size, append, load, savefreq, report,
                                         target,
                                         olens,
                                         target_lens)
-                    if not torch.isinf(loss):
-                        loss.backward()
+                    if not torch.isinf(loss).any():
+                        loss.sum().backward()
                         optim.step()
                     else:
                         logger.debug('infinite loss in trial')
