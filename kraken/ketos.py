@@ -585,6 +585,7 @@ def extract(ctx, binarize, normalization, normalize_whitespace, reorder,
 @click.option('--bw/--orig', default=True, show_default=True,
               help="Put nonbinarized images in output")
 @click.option('-m', '--maxcolseps', default=2, type=click.INT, show_default=True)
+@click.option('--remove_hlines/--hlines', show_default=True, default=True)
 @click.option('-b/-w', '--black_colseps/--white_colseps', default=False, show_default=True)
 @click.option('-f', '--font', default='',
               help='Font family to use')
@@ -601,7 +602,7 @@ def extract(ctx, binarize, normalization, normalize_whitespace, reorder,
 @click.argument('images', nargs=-1, type=click.File(mode='rb', lazy=True))
 def transcription(ctx, text_direction, scale, bw, maxcolseps,
                   black_colseps, font, font_style, prefill, pad, lines, output,
-                  images):
+                  images, remove_hlines):
     """
     Creates transcription environments for ground truth generation.
     """
@@ -638,7 +639,7 @@ def transcription(ctx, text_direction, scale, bw, maxcolseps,
             im_bin = im_bin.convert('1')
             logger.info('Segmenting page')
             if not lines:
-                res = pageseg.segment(im_bin, text_direction, scale, maxcolseps, black_colseps, pad=pad)
+                res = pageseg.segment(im_bin, text_direction, scale, maxcolseps, black_colseps, no_hlines=remove_hlines, pad=pad)
             else:
                 with open_file(lines, 'r') as fp:
                     try:
@@ -653,9 +654,15 @@ def transcription(ctx, text_direction, scale, bw, maxcolseps,
                 for pred in it:
                     logger.debug('{}'.format(pred.prediction))
                     preds.append(pred)
-                ti.add_page(im, res, records=preds)
+                if bw:
+                    ti.add_page(im_bin, res, records=preds)
+                else:
+                    ti.add_page(im, res, records=preds)
             else:
-                ti.add_page(im, res)
+                if bw:
+                    ti.add_page(im_bin, res)
+                else:
+                    ti.add_page(im, res)
             fp.close()
     logger.info('Writing transcription to {}'.format(output.name))
     message('Writing output', nl=False)
