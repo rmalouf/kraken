@@ -1,8 +1,8 @@
 name: kraken
 channels:
   - defaults
-  - pytorch
   - conda-forge
+  - pytorch
 dependencies:
   - python>=3.6
   - python-bidi
@@ -12,16 +12,20 @@ dependencies:
   - requests
   - click>=7.0
   - numpy
-  - pillow
+  - pillow>=6.2.2
   - scipy
   - protobuf>=3.0
   - jinja2
   - torchvision
-  - pytorch==1.3.0
+  - pytorch>=1.5.0
+  - cudatoolkit<=9.2
+  - cuda92
   - jsonschema
   - scikit-image
   - shapely
   - pip
+  - pyvips
+  - imagemagick<7.0.9
   - pip:
-    - coremltools
+    - coremltools>=3.3
     - git+https://github.com/mittagessen/kraken.git@master

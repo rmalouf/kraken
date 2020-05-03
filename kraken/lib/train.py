@@ -16,21 +16,26 @@
 """
 Training loop interception helpers
 """
+import re
 import abc
 import math
 import torch
+import shutil
 import logging
 import numpy as np
+import torch.nn.functional as F
 
-from itertools import cycle, count
-from torch.utils import data
-from functools import partial
-from typing import Tuple, Union, Optional, Callable, List, Dict, Any
-from collections.abc import Iterable
+from itertools import cycle
+from typing import Tuple, Callable, List, Dict, Any, Optional, Sequence
 
-from kraken.lib import models, vgsl
-from kraken.lib.dataset import compute_error
-from kraken.lib.exceptions import KrakenStopTrainingException, KrakenInputException
+from kraken.lib import models, vgsl, segmentation, default_specs
+from kraken.lib.util import make_printable
+from kraken.lib.codec import PytorchCodec
+from kraken.lib.dataset import BaselineSet, GroundTruthDataset, PolygonGTDataset, generate_input_transforms, preparse_xml_data, InfiniteDataLoader, compute_error
+from kraken.lib.exceptions import KrakenInputException
+
+from torch.utils.data import DataLoader
+
 
 logger = logging.getLogger(__name__)
 
@@ -58,11 +63,14 @@ class TrainStopper(object):
         """
         pass
 
+
 def annealing_const(start: float, end: float, pct: float) -> float:
     return start
 
+
 def annealing_linear(start: float, end: float, pct: float) -> float:
     return start + pct * (end-start)
+
 
 def annealing_cos(start: float, end: float, pct: float) -> float:
     co = np.cos(np.pi * pct) + 1
@@ -121,7 +129,9 @@ def add_1cycle(sched: TrainScheduler, iterations: int,
     """
     Adds 1cycle policy [0] phases to a learning rate scheduler.
 
-    [0] Smith, Leslie N. "A disciplined approach to neural network hyper-parameters: Part 1--learning rate, batch size, momentum, and weight decay." arXiv preprint arXiv:1803.09820 (2018).
+    [0] Smith, Leslie N. "A disciplined approach to neural network
+    hyper-parameters: Part 1--learning rate, batch size, momentum, and weight
+    decay." arXiv preprint arXiv:1803.09820 (2018).
 
     Args:
         sched (kraken.lib.train.Trainscheduler): TrainScheduler instance
@@ -211,7 +221,7 @@ class NoStopping(TrainStopper):
     def __init__(self) -> None:
         super().__init__()
 
-    def update(self, val_los: float) -> None:
+    def update(self, val_loss: float) -> None:
         """
         Only update internal best iteration
         """
@@ -224,9 +234,75 @@ class NoStopping(TrainStopper):
         return True
 
 
+def recognition_loss_fn(criterion, output, target):
+    # height should be 1 by now
+    if output.size(2) != 1:
+        raise KrakenInputException('Expected dimension 3 to be 1, actual {}'.format(output.size(2)))
+    output = output.squeeze(2)
+    # NCW -> WNC
+    loss = criterion(output.permute(2, 0, 1),  # type: ignore
+                     target,
+                     (output.size(2),),
+                     (target.size(1),))
+    return loss
+
+
+def baseline_label_loss_fn(criterion, output, target):
+    output = F.interpolate(output, size=(target.size(2), target.size(3)))
+    loss = criterion(output, target)
+    return loss
+
+
+def recognition_evaluator_fn(model, val_set, device):
+    rec = models.TorchSeqRecognizer(model, device=device)
+    chars, error = compute_error(rec, list(val_set))
+    model.train()
+    accuracy = (chars-error)/chars
+    return {'val_metric': accuracy, 'accuracy': accuracy, 'chars': chars, 'error': error}
+
+
+def baseline_label_evaluator_fn(model, val_set, device):
+    smooth = np.finfo(np.float).eps
+    corrects = torch.zeros(val_set.num_classes, dtype=torch.double).to(device)
+    all_n = torch.zeros(val_set.num_classes, dtype=torch.double).to(device)
+    intersections = torch.zeros(val_set.num_classes, dtype=torch.double).to(device)
+    unions = torch.zeros(val_set.num_classes, dtype=torch.double).to(device)
+    cls_cnt = torch.zeros(val_set.num_classes, dtype=torch.double).to(device)
+    model.eval()
+
+    with torch.no_grad():
+        for x, y in val_set:
+            x = x.to(device)
+            y = y.to(device).unsqueeze(0)
+            pred = model.nn(x.unsqueeze(0))
+            # scale target to output size
+            y = F.interpolate(y, size=(pred.size(2), pred.size(3))).squeeze(0).bool()
+            pred = segmentation.denoising_hysteresis_thresh(pred.detach().squeeze().cpu().numpy(), 0.2, 0.3, 0)
+            pred = torch.from_numpy(pred.astype('bool')).to(device)
+            pred = pred.view(pred.size(0), -1)
+            y = y.view(y.size(0), -1)
+            intersections += (y & pred).sum(dim=1, dtype=torch.double)
+            unions += (y | pred).sum(dim=1, dtype=torch.double)
+            corrects += torch.eq(y, pred).sum(dim=1, dtype=torch.double)
+            cls_cnt += y.sum(dim=1, dtype=torch.double)
+            all_n += y.size(1)
+    model.train()
+    # all_positives = tp + fp
+    # actual_positives = tp + fn
+    # true_positivies = tp
+    pixel_accuracy = corrects.sum()/all_n.sum()
+    mean_accuracy = torch.mean(corrects/all_n)
+    iu = (intersections+smooth)/(unions+smooth)
+    mean_iu = torch.mean(iu)
+    freq_iu = torch.sum(cls_cnt/cls_cnt.sum() * iu)
+    return {'accuracy': pixel_accuracy, 'mean_acc': mean_accuracy, 'mean_iu': mean_iu, 'freq_iu': freq_iu, 'val_metric': mean_iu}
+
+def segmentation_train_gen():
+    pass
+
 class KrakenTrainer(object):
     """
-    Class encapsulating the training process.
+    Class encapsulating the recognition model training process.
     """
     def __init__(self,
                  model: vgsl.TorchVGSLModel,
@@ -235,25 +311,34 @@ class KrakenTrainer(object):
                  filename_prefix: str = 'model',
                  event_frequency: float = 1.0,
                  train_set: torch.utils.data.DataLoader = None,
-                 val_set = None,
-                 stopper = None):
+                 val_set=None,
+                 stopper=None,
+                 loss_fn=recognition_loss_fn,
+                 evaluator=recognition_evaluator_fn):
         self.model = model
-        self.rec = models.TorchSeqRecognizer(model, train=True, device=device)
         self.optimizer = optimizer
         self.device = device
         self.filename_prefix = filename_prefix
         self.event_frequency = event_frequency
         self.event_it = int(len(train_set) * event_frequency)
-        self.train_set = cycle(train_set)
+        self.train_set = train_set
         self.val_set = val_set
         self.stopper = stopper if stopper else NoStopping()
         self.iterations = 0
         self.lr_scheduler = None
+        self.loss_fn = loss_fn
+        self.evaluator = evaluator
+        # fill training metadata fields in model files
+        self.model.seg_type = train_set.dataset.seg_type
 
     def add_lr_scheduler(self, lr_scheduler: TrainScheduler):
         self.lr_scheduler = lr_scheduler
 
-    def run(self, event_callback = lambda *args, **kwargs: None, iteration_callback = lambda *args, **kwargs: None):
+    def run(self, event_callback=lambda *args, **kwargs: None, iteration_callback=lambda *args, **kwargs: None):
+        logger.debug('Moving model to device {}'.format(self.device))
+        self.model.to(self.device)
+        self.model.train()
+
         logger.debug('Starting up training...')
 
         if 'accuracy' not in self.model.user_metadata:
@@ -267,16 +352,8 @@ class KrakenTrainer(object):
                 target = target.to(self.device, non_blocking=True)
                 input = input.requires_grad_()
                 o = self.model.nn(input)
-                # height should be 1 by now
-                if o.size(2) != 1:
-                    raise KrakenInputException('Expected dimension 3 to be 1, actual {}'.format(o.size(2)))
-                o = o.squeeze(2)
                 self.optimizer.zero_grad()
-                # NCW -> WNC
-                loss = self.model.criterion(o.permute(2, 0, 1),  # type: ignore
-                                            target,
-                                            (o.size(2),),
-                                            (target.size(1),))
+                loss = self.loss_fn(self.model.criterion, o, target)
                 if not torch.isinf(loss):
                     loss.backward()
                     self.optimizer.step()
@@ -285,17 +362,529 @@ class KrakenTrainer(object):
                 iteration_callback()
             self.iterations += self.event_it
             logger.debug('Starting evaluation run')
-            self.model.eval()
-            chars, error = compute_error(self.rec, list(self.val_set))
-            self.model.train()
-            accuracy = (chars-error)/chars
-            logger.info('Accuracy report ({}) {:0.4f} {} {}'.format(self.stopper.epoch, accuracy, chars, error))
-            self.stopper.update(accuracy)
-            self.model.user_metadata['accuracy'].append((self.iterations, accuracy))
+            eval_res = self.evaluator(self.model, self.val_set, self.device)
+            self.stopper.update(eval_res['val_metric'])
+            self.model.user_metadata['accuracy'].append((self.iterations, float(eval_res['val_metric'])))
             logger.info('Saving to {}_{}'.format(self.filename_prefix, self.stopper.epoch))
-            event_callback(epoch=self.stopper.epoch, accuracy=accuracy, chars=chars, error=error)
+            event_callback(epoch=self.stopper.epoch, **eval_res)
+            # fill one_channel_mode after 1 iteration over training data set
+            im_mode = self.train_set.dataset.im_mode
+            if im_mode in ['1', 'L']:
+                self.model.one_channel_mode = im_mode
             try:
-                self.model.user_metadata['completed_epochs'] = self.stopper.epoch
+                self.model.hyper_params['completed_epochs'] = self.stopper.epoch
                 self.model.save_model('{}_{}.mlmodel'.format(self.filename_prefix, self.stopper.epoch))
             except Exception as e:
                 logger.error('Saving model failed: {}'.format(str(e)))
+
+    @classmethod
+    def recognition_train_gen(cls,
+                              hyper_params: Dict = default_specs.RECOGNITION_HYPER_PARAMS,
+                              progress_callback: Callable[[str, int], Callable[[None], None]] = lambda string, length: lambda: None,
+                              message: Callable[[str], None] = lambda *args, **kwargs: None,
+                              output: str = 'model',
+                              spec: str = default_specs.RECOGNITION_SPEC,
+                              append: Optional[int] = None,
+                              load: Optional[str] = None,
+                              device: str = 'cpu',
+                              reorder: bool = True,
+                              training_data: Sequence[Dict] = None,
+                              evaluation_data: Sequence[Dict] = None,
+                              preload: Optional[bool] = None,
+                              threads: int = 1,
+                              load_hyper_parameters: bool = False,
+                              repolygonize: bool = False,
+                              force_binarization: bool = False,
+                              format_type: str = 'path',
+                              codec: Optional[Dict] = None,
+                              resize: str = 'fail',
+                              augment: bool = False):
+        """
+        This is an ugly constructor that takes all the arguments from the command
+        line driver, finagles the datasets, models, and hyperparameters correctly
+        and returns a KrakenTrainer object.
+
+        Setup parameters (load, training_data, evaluation_data, ....) are named,
+        model hyperparameters (everything in
+        kraken.lib.default_specs.RECOGNITION_HYPER_PARAMS) are in in the
+        `hyper_params` argument.
+
+        Args:
+            hyper_params (dict): Hyperparameter dictionary containing all fields
+                                 from
+                                 kraken.lib.default_specs.RECOGNITION_HYPER_PARAMS
+            progress_callback (Callable): Callback for progress reports on various
+                                          computationally expensive processes. A
+                                          human readable string and the process
+                                          length is supplied. The callback has to
+                                          return another function which will be
+                                          executed after each step.
+            message (Callable): Messaging printing method for above log but below
+                                warning level output, i.e. infos that should
+                                generally be shown to users.
+            **kwargs: Setup parameters, i.e. CLI parameters of the train() command.
+
+        Returns:
+            A KrakenTrainer object.
+        """
+        # load model if given. if a new model has to be created we need to do that
+        # after data set initialization, otherwise to output size is still unknown.
+        nn = None
+
+        if load:
+            logger.info(f'Loading existing model from {load} ')
+            message(f'Loading existing model from {load} ', nl=False)
+            nn = vgsl.TorchVGSLModel.load_model(load)
+            if load_hyper_parameters:
+                hyper_params.update(nn.hyper_params)
+                nn.hyper_params = hyper_params
+            message('\u2713', fg='green', nl=False)
+
+        DatasetClass = GroundTruthDataset
+        if format_type and format_type != 'path':
+            logger.info(f'Parsing {len(training_data)} XML files for training data')
+            if repolygonize:
+                message('Repolygonizing data')
+            training_data = preparse_xml_data(training_data, format_type, repolygonize)
+            evaluation_data = preparse_xml_data(evaluation_data, format_type, repolygonize)
+            DatasetClass = PolygonGTDataset
+            valid_norm = False
+        elif format_type == 'path':
+            if force_binarization:
+                logger.warning('Forced binarization enabled in `path` mode. Will be ignored.')
+                force_binarization = False
+            if repolygonize:
+                logger.warning('Repolygonization enabled in `path` mode. Will be ignored.')
+            training_data = [{'image': im} for im in training_data]
+            if evaluation_data:
+                evaluation_data = [{'image': im} for im in evaluation_data]
+            valid_norm = True
+        # format_type is None. Determine training type from length of training data entry
+        else:
+            if len(training_data[0]) >= 4):
+                DatasetClass = PolygonGTDataset
+
+        # preparse input sizes from vgsl string to seed ground truth data set
+        # sizes and dimension ordering.
+        if not nn:
+            spec = spec.strip()
+            if spec[0] != '[' or spec[-1] != ']':
+                raise click.BadOptionUsage('spec', 'VGSL spec {} not bracketed'.format(spec))
+            blocks = spec[1:-1].split(' ')
+            m = re.match(r'(\d+),(\d+),(\d+),(\d+)', blocks[0])
+            if not m:
+                raise click.BadOptionUsage('spec', f'Invalid input spec {blocks[0]}')
+            batch, height, width, channels = [int(x) for x in m.groups()]
+        else:
+            batch, channels, height, width = nn.input
+        try:
+            transforms = generate_input_transforms(batch, height, width, channels, hyper_params['pad'], valid_norm, force_binarization)
+        except KrakenInputException as e:
+            raise click.BadOptionUsage('spec', str(e))
+
+        if len(training_data) > 2500 and not preload:
+            logger.info('Disabling preloading for large (>2500) training data set. Enable by setting --preload parameter')
+            preload = False
+        # implicit preloading enabled for small data sets
+        if preload is None:
+            preload = True
+
+        # set multiprocessing tensor sharing strategy
+        if 'file_system' in torch.multiprocessing.get_all_sharing_strategies():
+            logger.debug('Setting multiprocessing tensor sharing strategy to file_system')
+            torch.multiprocessing.set_sharing_strategy('file_system')
+
+        gt_set = DatasetClass(normalization=hyper_params['normalization'],
+                              whitespace_normalization=hyper_params['normalize_whitespace'],
+                              reorder=reorder,
+                              im_transforms=transforms,
+                              preload=preload,
+                              augmentation=hyper_params['augment'])
+        bar = progress_callback('Building training set', len(training_data))
+        for im in training_data:
+            logger.debug(f'Adding line {im} to training set')
+            try:
+                gt_set.add(**im)
+                bar()
+            except FileNotFoundError as e:
+                logger.warning(f'{e.strerror}: {e.filename}. Skipping.')
+            except KrakenInputException as e:
+                logger.warning(str(e))
+
+        val_set = DatasetClass(normalization=hyper_params['normalization'],
+                               whitespace_normalization=hyper_params['normalize_whitespace'],
+                               reorder=reorder,
+                               im_transforms=transforms,
+                               preload=preload)
+        bar = progress_callback('Building validation set', len(evaluation_data))
+        for im in evaluation_data:
+            logger.debug(f'Adding line {im} to validation set')
+            try:
+                val_set.add(**im)
+                bar()
+            except FileNotFoundError as e:
+                logger.warning(f'{e.strerror}: {e.filename}. Skipping.')
+            except KrakenInputException as e:
+                logger.warning(str(e))
+
+        if len(gt_set._images) == 0:
+            logger.error('No valid training data was provided to the train command. Please add valid XML or line data.')
+            return None
+
+        logger.info(f'Training set {len(gt_set._images)} lines, validation set {len(val_set._images)} lines, alphabet {len(gt_set.alphabet)} symbols')
+        alpha_diff_only_train = set(gt_set.alphabet).difference(set(val_set.alphabet))
+        alpha_diff_only_val = set(val_set.alphabet).difference(set(gt_set.alphabet))
+        if alpha_diff_only_train:
+            logger.warning(f'alphabet mismatch: chars in training set only: {alpha_diff_only_train} (not included in accuracy test during training)')
+        if alpha_diff_only_val:
+            logger.warning(f'alphabet mismatch: chars in validation set only: {alpha_diff_only_val} (not trained)')
+        logger.info('grapheme\tcount')
+        for k, v in sorted(gt_set.alphabet.items(), key=lambda x: x[1], reverse=True):
+            char = make_printable(k)
+            if char == k:
+                char = '\t' + char
+            logger.info(f'{char}\t{v}')
+
+        logger.debug('Encoding training set')
+
+
+        # use model codec when given
+        if append:
+            # is already loaded
+            nn = cast(vgsl.TorchVGSLModel, nn)
+            gt_set.encode(codec)
+            message('Slicing and dicing model ', nl=False)
+            # now we can create a new model
+            spec = '[{} O1c{}]'.format(spec[1:-1], gt_set.codec.max_label()+1)
+            logger.info(f'Appending {spec} to existing model {nn.spec} after {append}')
+            nn.append(append, spec)
+            nn.add_codec(gt_set.codec)
+            message('\u2713', fg='green')
+            logger.info(f'Assembled model spec: {nn.spec}')
+        elif load:
+            # is already loaded
+            nn = cast(vgsl.TorchVGSLModel, nn)
+
+
+            # prefer explicitly given codec over network codec if mode is 'both'
+            codec = codec if (codec and resize == 'both') else nn.codec
+
+            try:
+                gt_set.encode(codec)
+            except KrakenEncodeException:
+                message('Network codec not compatible with training set')
+                alpha_diff = set(gt_set.alphabet).difference(set(codec.c2l.keys()))
+                if resize == 'fail':
+                    logger.error(f'Training data and model codec alphabets mismatch: {alpha_diff}')
+                    return None
+                elif resize == 'add':
+                    message('Adding missing labels to network ', nl=False)
+                    logger.info(f'Resizing codec to include {len(alpha_diff)} new code points')
+                    codec.c2l.update({k: [v] for v, k in enumerate(alpha_diff, start=codec.max_label()+1)})
+                    nn.add_codec(PytorchCodec(codec.c2l))
+                    logger.info(f'Resizing last layer in network to {codex.max_label()+1} outputs')
+                    nn.resize_output(codec.max_label()+1)
+                    gt_set.encode(nn.codec)
+                    message('\u2713', fg='green')
+                elif resize == 'both':
+                    message('Fitting network exactly to training set ', nl=False)
+                    logger.info(f'Resizing network or given codec to {gt_set.alphabet} code sequences')
+                    gt_set.encode(None)
+                    ncodec, del_labels = codec.merge(gt_set.codec)
+                    logger.info(f'Deleting {len(del_labels)} output classes from network ({len(codec)-len(del_labels)} retained)')
+                    gt_set.encode(ncodec)
+                    nn.resize_output(ncodec.max_label()+1, del_labels)
+                    message('\u2713', fg='green')
+                else:
+                    logger.error(f'invalid resize parameter value {resize}')
+                    return None
+        else:
+            gt_set.encode(codec)
+            logger.info(f'Creating new model {spec} with {gt_set.codec.max_label()+1} outputs')
+            spec = '[{} O1c{}]'.format(spec[1:-1], gt_set.codec.max_label()+1)
+            nn = vgsl.TorchVGSLModel(spec)
+            # initialize weights
+            message('Initializing model ', nl=False)
+            nn.init_weights()
+            nn.add_codec(gt_set.codec)
+            # initialize codec
+            message('\u2713', fg='green')
+
+        if nn.one_channel_mode and gt_set.im_mode != nn.one_channel_mode:
+            logger.warning(f'Neural network has been trained on mode {nn.one_channel_mode} images, training set contains mode {gt_set.im_mode} data. Consider setting `force_binarization`')
+
+        if format_type != 'path' and nn.seg_type == 'bbox':
+            logger.warning('Neural network has been trained on bounding box image information but training set is polygonal.')
+
+        # half the number of data loading processes if device isn't cuda and we haven't enabled preloading
+
+        if device == 'cpu' and not preload:
+            loader_threads = threads // 2
+        else:
+            loader_threads = threads
+        train_loader = InfiniteDataLoader(gt_set, batch_size=1, shuffle=True, num_workers=loader_threads, pin_memory=True)
+        threads = max(threads - loader_threads, 1)
+
+        # don't encode validation set as the alphabets may not match causing encoding failures
+        val_set.training_set = list(zip(val_set._images, val_set._gt))
+
+        logger.debug('Constructing {} optimizer (lr: {}, momentum: {})'.format(hyper_params['optimizer'], hyper_params['lrate'], hyper_params['momentum']))
+
+        # set model type metadata field
+        nn.model_type = 'recognition'
+
+        # set mode to trainindg
+        nn.train()
+
+        # set number of OpenMP threads
+        logger.debug(f'Set OpenMP threads to {threads}')
+        nn.set_num_threads(threads)
+
+        optim = getattr(torch.optim, hyper_params['optimizer'])(nn.nn.parameters(), lr=0)
+
+        if 'seg_type' not in nn.user_metadata:
+            nn.user_metadata['seg_type'] = 'baselines' if format_type != 'path' else 'bbox'
+
+        tr_it = TrainScheduler(optim)
+        if hyper_params['schedule'] == '1cycle':
+            add_1cycle(tr_it,
+                       int(len(gt_set) * hyper_params['epochs']),
+                       hyper_params['lrate'],
+                       hyper_params['momentum'],
+                       hyper_params['momentum'] - 0.10,
+                       hyper_params['weight_decay'])
+        else:
+            # constant learning rate scheduler
+            tr_it.add_phase(1,
+                            2*(hyper_params['lrate'],),
+                            2*(hyper_params['momentum'],),
+                            hyper_params['weight_decay'],
+                            annealing_const)
+
+        if hyper_params['quit'] == 'early':
+            st_it = EarlyStopping(hyper_params['min_delta'], hyper_params['lag'])
+        elif hyper_params['quit'] == 'dumb':
+            st_it = EpochStopping(hyper_params['epochs'] - hyper_params['completed_epochs'])
+        else:
+            logger.error(f'Invalid training interruption scheme {quit}')
+            return None
+
+        trainer = cls(model=nn,
+                      optimizer=optim,
+                      device=device,
+                      filename_prefix=output,
+                      event_frequency=hyper_params['freq'],
+                      train_set=train_loader,
+                      val_set=val_set,
+                      stopper=st_it)
+
+        trainer.add_lr_scheduler(tr_it)
+
+        return trainer
+
+    @classmethod
+    def segmentation_train_gen(cls,
+                               hyper_params: Dict = default_specs.SEGMENTATION_HYPER_PARAMS,
+                               progress_callback: Callable[[str, int], Callable[[None], None]] = lambda string, length: lambda: None,
+                               message: Callable[[str], None] = lambda *args, **kwargs: None,
+                               output: str = 'model',
+                               spec: str = default_specs.SEGMENTATION_SPEC,
+                               load: Optional[str] = None,
+                               device: str = 'cpu',
+                               training_data: Sequence[Dict] = None,
+                               evaluation_data: Sequence[Dict] = None,
+                               threads: int = 1,
+                               load_hyper_parameters: bool = False,
+                               force_binarization: bool = False,
+                               format_type: str = 'path',
+                               suppress_regions: bool = False,
+                               suppress_baselines: bool = False,
+                               valid_regions: Optional[Sequence[str]] = None,
+                               valid_baselines: Optional[Sequence[str]] = None,
+                               merge_regions: Optional[Dict[str, str]] = None,
+                               merge_baselines: Optional[Dict[str, str]] = None,
+                               augment: bool = False):
+        """
+        This is an ugly constructor that takes all the arguments from the command
+        line driver, finagles the datasets, models, and hyperparameters correctly
+        and returns a KrakenTrainer object.
+
+        Setup parameters (load, training_data, evaluation_data, ....) are named,
+        model hyperparameters (everything in
+        kraken.lib.default_specs.SEGMENTATION_HYPER_PARAMS) are in in the
+        `hyper_params` argument.
+
+        Args:
+            hyper_params (dict): Hyperparameter dictionary containing all fields
+                                 from
+                                 kraken.lib.default_specs.SEGMENTATION_HYPER_PARAMS
+            progress_callback (Callable): Callback for progress reports on various
+                                          computationally expensive processes. A
+                                          human readable string and the process
+                                          length is supplied. The callback has to
+                                          return another function which will be
+                                          executed after each step.
+            message (Callable): Messaging printing method for above log but below
+                                warning level output, i.e. infos that should
+                                generally be shown to users.
+            **kwargs: Setup parameters, i.e. CLI parameters of the train() command.
+
+        Returns:
+            A KrakenTrainer object.
+        """
+        # load model if given. if a new model has to be created we need to do that
+        # after data set initialization, otherwise to output size is still unknown.
+        nn = None
+
+        if load:
+            logger.info(f'Loading existing model from {load} ')
+            message(f'Loading existing model from {load} ', nl=False)
+            nn = vgsl.TorchVGSLModel.load_model(load)
+            if load_hyper_parameters:
+                hyper_params.update(nn.hyper_params)
+                nn.hyper_params = hyper_params
+            message('\u2713', fg='green', nl=False)
+
+        # preparse input sizes from vgsl string to seed ground truth data set
+        # sizes and dimension ordering.
+        if not nn:
+            spec = spec.strip()
+            if spec[0] != '[' or spec[-1] != ']':
+                logger.error(f'VGSL spec "{spec}" not bracketed')
+                return None
+            blocks = spec[1:-1].split(' ')
+            m = re.match(r'(\d+),(\d+),(\d+),(\d+)', blocks[0])
+            if not m:
+                logger.error(f'Invalid input spec {blocks[0]}')
+                return None
+            batch, height, width, channels = [int(x) for x in m.groups()]
+        else:
+            batch, channels, height, width = nn.input
+        try:
+            transforms = generate_input_transforms(batch, height, width, channels, 0, valid_norm=False)
+        except KrakenInputException as e:
+            logger.error(f'Spec error: {e}')
+            return None
+
+        # set multiprocessing tensor sharing strategy
+        if 'file_system' in torch.multiprocessing.get_all_sharing_strategies():
+            logger.debug('Setting multiprocessing tensor sharing strategy to file_system')
+            torch.multiprocessing.set_sharing_strategy('file_system')
+
+        if not valid_regions:
+            valid_regions = None
+        if not valid_baselines:
+            valid_baselines = None
+
+        if suppress_regions:
+            valid_regions = []
+            merge_regions = None
+        if suppress_baselines:
+            valid_baselines = []
+            merge_baselines = None
+
+        gt_set = BaselineSet(training_data,
+                             line_width=hyper_params['line_width'],
+                             im_transforms=transforms,
+                             mode=format_type,
+                             augmentation=hyper_params['augment'],
+                             valid_baselines=valid_baselines,
+                             merge_baselines=merge_baselines,
+                             valid_regions=valid_regions,
+                             merge_regions=merge_regions)
+        val_set = BaselineSet(evaluation_data,
+                              line_width=hyper_params['line_width'],
+                              im_transforms=transforms,
+                              mode=format_type,
+                              augmentation=hyper_params['augment'],
+                              valid_baselines=valid_baselines,
+                              merge_baselines=merge_baselines,
+                              valid_regions=valid_regions,
+                              merge_regions=merge_regions)
+
+        if format_type == None:
+            for page in training_data:
+                gt_set.add(**page)
+            for page in evaluation_data:
+                val_set.add(**page)
+
+        # overwrite class mapping in validation set
+        val_set.num_classes = gt_set.num_classes
+        val_set.class_mapping = gt_set.class_mapping
+
+        if not load:
+            spec = f'[{spec[1:-1]} O2l{gt_set.num_classes}]'
+            message(f'Creating model {spec} with {gt_set.num_classes} outputs ', nl=False)
+            nn = vgsl.TorchVGSLModel(spec)
+            message('\u2713', fg='green')
+
+        message('Training line types:')
+        for k, v in gt_set.class_mapping['baselines'].items():
+            message(f'  {k}\t{v}')
+        message('Training region types:')
+        for k, v in gt_set.class_mapping['regions'].items():
+            message(f'  {k}\t{v}')
+
+        if len(gt_set.imgs) == 0:
+            logger.error('No valid training data was provided to the train command. Please add valid XML data.')
+            return None
+
+        if device == 'cpu':
+            loader_threads = threads // 2
+        else:
+            loader_threads = threads
+
+        train_loader = InfiniteDataLoader(gt_set, batch_size=1, shuffle=True, num_workers=loader_threads, pin_memory=True)
+        test_loader = DataLoader(val_set, batch_size=1, shuffle=True, num_workers=loader_threads, pin_memory=True)
+        threads = max((threads - loader_threads, 1))
+
+        # set model type metadata field and dump class_mapping
+        nn.model_type = 'segmentation'
+        nn.user_metadata['class_mapping'] = val_set.class_mapping
+
+        # set mode to training
+        nn.train()
+
+        logger.debug(f'Set OpenMP threads to {threads}')
+        nn.set_num_threads(threads)
+
+        optim = getattr(torch.optim, hyper_params['optimizer'])(nn.nn.parameters(), lr=0)
+
+        tr_it = TrainScheduler(optim)
+        if hyper_params['schedule'] == '1cycle':
+            add_1cycle(tr_it,
+                       int(len(gt_set) * hyper_params['epochs']),
+                       hyper_params['lrate'],
+                       hyper_params['momentum'],
+                       hyper_params['momentum'] - 0.10,
+                       hyper_params['weight_decay'])
+        else:
+            # constant learning rate scheduler
+            tr_it.add_phase(1,
+                            2*(hyper_params['lrate'],),
+                            2*(hyper_params['momentum'],),
+                            hyper_params['weight_decay'],
+                            annealing_const)
+
+        if hyper_params['quit'] == 'early':
+            st_it = EarlyStopping(hyper_params['min_delta'], hyper_params['lag'])
+        elif hyper_params['quit'] == 'dumb':
+            st_it = EpochStopping(hyper_params['epochs'] - hyper_params['completed_epochs'])
+        else:
+            logger.error(f'Invalid training interruption scheme {quit}')
+            return None
+
+        trainer = cls(model=nn,
+                      optimizer=optim,
+                      device=device,
+                      filename_prefix=output,
+                      event_frequency=hyper_params['freq'],
+                      train_set=train_loader,
+                      val_set=val_set,
+                      stopper=st_it,
+                      loss_fn=baseline_label_loss_fn,
+                      evaluator=baseline_label_evaluator_fn)
+
+        trainer.add_lr_scheduler(tr_it)
+
+        return trainer
